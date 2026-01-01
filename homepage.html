@@ -1,0 +1,1035 @@
+<!doctype html>
+<html lang="en" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Artist Commission Sheet</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&amp;display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @font-face {
+      font-family: 'Sailors';
+      src: url('https://fonts.cdnfonts.com/s/14984/SAILORS.woff') format('woff');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    body {
+      box-sizing: border-box;
+    }
+
+    .title-font {
+      font-family: 'Sailors', serif;
+      color: #000000;
+    }
+
+    .subtitle-font {
+      font-family: 'Poppins', sans-serif;
+      color: #000000;
+    }
+
+    @keyframes sparkle {
+      0%, 100% {
+        opacity: 0;
+        transform: scale(0);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .glitter-bg {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glitter-bg::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        radial-gradient(circle, white 1px, transparent 1px),
+        radial-gradient(circle, white 1px, transparent 1px),
+        radial-gradient(circle, white 1px, transparent 1px);
+      background-size: 50px 50px, 80px 80px, 100px 100px;
+      background-position: 0 0, 40px 60px, 130px 270px;
+      animation: sparkle 3s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    .glitter-bg::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        radial-gradient(circle, rgba(255,255,255,0.8) 1px, transparent 1px),
+        radial-gradient(circle, rgba(255,255,255,0.6) 1px, transparent 1px);
+      background-size: 60px 60px, 90px 90px;
+      background-position: 25px 25px, 75px 75px;
+      animation: sparkle 2s ease-in-out infinite reverse;
+      pointer-events: none;
+    }
+
+    .theme-bg {
+      background-color: #f9c501;
+    }
+
+    .theme-border {
+      border-color: #f9c501;
+    }
+
+    .theme-text {
+      color: #f9c501;
+    }
+
+    .commission-display {
+      display: flex;
+      justify-content: center;
+      margin: 2rem 0;
+      overflow-x: auto;
+      padding: 2rem;
+    }
+
+    .image-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .character-images {
+      position: relative;
+      display: flex;
+      align-items: center;
+      height: 450px;
+      min-width: 700px;
+    }
+
+    .character-image {
+      position: absolute;
+      width: 280px;
+      height: 420px;
+      border: 3px solid #000;
+      background: #f5f5f5;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: #666;
+      overflow: hidden;
+    }
+
+    .placeholder-text {
+      text-align: center;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .lineart-img {
+      left: 0;
+      z-index: 1;
+    }
+
+    .base-img {
+      left: 180px;
+      z-index: 2;
+    }
+
+    .rendered-img {
+      left: 360px;
+      z-index: 3;
+    }
+
+    .character-image.dimmed {
+      opacity: 0.35;
+    }
+
+    .character-image.active {
+      opacity: 1;
+      transform: scale(1.05);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+
+
+
+    .price-labels {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      margin-left: 40px;
+      height: 420px;
+      padding: 20px 0;
+    }
+
+    .price-label {
+      background: white;
+      border: 2px solid #f9c501;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      font-size: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      white-space: nowrap;
+      min-width: 160px;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+    }
+
+    .modal-content {
+      background-color: #fefefe;
+      margin: 10% auto;
+      padding: 2rem;
+      border: 3px solid #f9c501;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 500px;
+    }
+
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .close:hover {
+      color: #000;
+    }
+
+    @media (max-width: 768px) {
+      .commission-display {
+        padding: 1rem;
+      }
+
+      .character-images {
+        height: 350px;
+        min-width: 550px;
+      }
+      
+      .character-image {
+        width: 200px;
+        height: 320px;
+      }
+      
+      .base-img {
+        left: 130px;
+      }
+      
+      .rendered-img {
+        left: 260px;
+      }
+
+      .price-labels {
+        height: 320px;
+        margin-left: 20px;
+      }
+      
+      .price-label {
+        font-size: 13px;
+        padding: 0.5rem;
+        min-width: 130px;
+      }
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full subtitle-font">
+  <div class="w-full h-full overflow-auto bg-white">
+   <div class="max-w-7xl mx-auto p-6"><!-- Artist Profile Section -->
+    <section class="mb-12">
+     <div class="py-6 rounded-lg mb-8" style="background-color: #f9c501;">
+      <h1 class="title-font text-6xl text-center font-bold uppercase" style="color: #000000;">JADE'S COMMISSION SHEET</h1>
+     </div>
+     <div class="grid md:grid-cols-2 gap-8 items-center"><!-- Artist Image -->
+      <div class="flex flex-col items-center">
+       <div class="w-64 h-64 bg-gray-200 border-4 theme-border rounded-lg flex items-center justify-center"><span class="text-gray-500"><img src="imgs/avatar.png" alt="" srcset=""></span>
+       </div>
+       <p class="subtitle-font text-2xl font-bold mt-4 theme-text">@jadentearl</p>
+      </div><!-- Action Buttons -->
+      <div class="flex flex-col gap-4"><button onclick="openSocials()" class="theme-bg text-black font-bold py-4 px-8 rounded-lg text-xl hover:opacity-90 transition"> Socials </button> <a href="https://ko-fi.com/jadentearl/shop" target="_blank" rel="noopener noreferrer" class="theme-bg text-black font-bold py-4 px-8 rounded-lg text-xl text-center hover:opacity-90 transition"> Shop </a> <button onclick="scrollToCommissions()" class="theme-bg text-black font-bold py-4 px-8 rounded-lg text-xl hover:opacity-90 transition"> Commission Section </button>
+      </div>
+     </div>
+    </section><!-- Commission Section -->
+    <section id="commissionSection" class="mb-12">
+     <h2 class="title-font text-4xl mb-6 text-center">Commission Options</h2>
+     <div class="flex justify-center gap-4 mb-8 flex-wrap"><button onclick="showStyle('chibi-typeA')" id="chibiTypeABtn" class="theme-bg text-black font-semibold py-3 px-6 rounded-lg text-lg hover:opacity-90 transition"> Type A - Chibi </button> <button onclick="showStyle('anime')" id="animeBtn" class="bg-gray-300 text-black font-semibold py-3 px-6 rounded-lg text-lg hover:opacity-90 transition"> Type B - Anime Style </button>
+     </div><!-- Type A Chibi -->
+     <div id="chibiTypeASection" class="style-section">
+      <h3 class="title-font text-3xl mb-6 text-center">Type A – Chibi</h3><!-- Sub-options for Type A -->
+      <div class="flex justify-center gap-4 mb-8 flex-wrap"><button onclick="showSubStyle('standard')" id="standardBtn" class="theme-bg text-black font-semibold py-2 px-5 rounded-lg hover:opacity-90 transition"> Standard Chibi </button> <button onclick="showSubStyle('pngtuber')" id="pngtuberBtn" class="bg-gray-300 text-black font-semibold py-2 px-5 rounded-lg hover:opacity-90 transition"> PNGtuber Chibi </button> <button onclick="showSubStyle('ych')" id="ychBtn" class="bg-gray-300 text-black font-semibold py-2 px-5 rounded-lg hover:opacity-90 transition"> YCH Base Chibi </button> <button onclick="showSubStyle('emotes')" id="emotesSubBtn" class="bg-gray-300 text-black font-semibold py-2 px-5 rounded-lg hover:opacity-90 transition"> YCH Emotes Bundle </button>
+      </div><!-- Standard Chibi -->
+      <div id="standardSection" class="sub-style-section">
+       <h4 class="subtitle-font text-2xl mb-6 text-center font-semibold">Standard Chibi</h4>
+       <div class="flex justify-center gap-3 mb-8"><button onclick="selectVersion('chibi-typeA', 'lineart')" id="chibi-typeA-lineart-btn" class="theme-bg text-black font-semibold py-2 px-6 rounded-lg hover:opacity-90 transition"> Lineart </button> <button onclick="selectVersion('chibi-typeA', 'base')" id="chibi-typeA-base-btn" class="bg-gray-300 text-black font-semibold py-2 px-6 rounded-lg hover:opacity-90 transition"> Base Color </button> <button onclick="selectVersion('chibi-typeA', 'rendered')" id="chibi-typeA-rendered-btn" class="bg-gray-300 text-black font-semibold py-2 px-6 rounded-lg hover:opacity-90 transition"> Fully Rendered </button>
+       </div>
+       <div class="commission-display">
+        <div class="image-container">
+         <div class="character-images">
+          <div class="character-image lineart-img active" id="chibi-typeA-lineart"><span class="placeholder-text">Lineart<br>
+            Full Body Example<br>
+            <img src="imgs/" alt="" srcset=""></span>
+          </div>
+          <div class="character-image base-img dimmed" id="chibi-typeA-base"><span class="placeholder-text">Base Color<br>
+            Full Body Example<br>
+            (Your Image Here)</span>
+          </div>
+          <div class="character-image rendered-img dimmed" id="chibi-typeA-rendered"><span class="placeholder-text">Fully Rendered<br>
+            Full Body Example<br>
+            (Your Image Here)</span>
+          </div>
+         </div>
+         <div class="price-labels">
+          <div class="price-label headshot-price" id="chibi-typeA-headshot">
+           Headshot: $5
+          </div>
+          <div class="price-label bust-price" id="chibi-typeA-bust">
+           Bust: $7
+          </div>
+          <div class="price-label halfbody-price" id="chibi-typeA-halfbody">
+           Half Body: $10
+          </div>
+          <div class="price-label fullbody-price" id="chibi-typeA-fullbody">
+           Whole Body: $12
+          </div>
+         </div>
+        </div>
+       </div>
+       <div class="mt-8 text-center subtitle-font text-sm">
+        <p class="font-semibold mb-2">Additional Options:</p>
+        <p>Backgrounds: Basic $5 | Detailed / Extra +$5–10</p>
+        <p>Additional Characters: +50% of base price per extra character (prices may vary based on character complexity)</p>
+       </div>
+      </div><!-- YCH Base Chibi -->
+      <div id="ychSection" class="sub-style-section hidden">
+       <h4 class="subtitle-font text-2xl mb-6 text-center font-semibold">YCH Base Chibi</h4>
+       <p class="text-center subtitle-font mb-6 text-gray-600">(Slightly cheaper than Standard)</p>
+       <div class="flex justify-center gap-3 mb-8"><button onclick="selectVersion('chibi-ych', 'lineart')" id="chibi-ych-lineart-btn" class="theme-bg text-black font-semibold py-2 px-6 rounded-lg hover:opacity-90 transition"> Lineart </button> <button onclick="selectVersion('chibi-ych', 'base')" id="chibi-ych-base-btn" class="bg-gray-300 text-black font-semibold py-2 px-6 rounded-lg hover:opacity-90 transition"> Base Color </button> <button onclick="selectVersion('chibi-ych', 'rendered')" id="chibi-ych-rendered-btn" class="bg-gray-300 text-black font-semibold py-2 px-6 rounded-lg hover:opacity-90 transition"> Fully Rendered </button>
+       </div>
+       <div class="commission-display">
+        <div class="image-container">
+         <div class="character-images">
+          <div class="character-image lineart-img active" id="chibi-ych-lineart"><span class="placeholder-text">Lineart<br>
+            Full Body Example<br>
+            (Your Image Here)</span>
+          </div>
+          <div class="character-image base-img dimmed" id="chibi-ych-base"><span class="placeholder-text">Base Color<br>
+            Full Body Example<br>
+            (Your Image Here)</span>
+          </div>
+          <div class="character-image rendered-img dimmed" id="chibi-ych-rendered"><span class="placeholder-text">Fully Rendered<br>
+            Full Body Example<br>
+            (Your Image Here)</span>
+          </div>
+         </div>
+         <div class="price-labels">
+          <div class="price-label headshot-price" id="chibi-ych-headshot">
+           Headshot: $5
+          </div>
+          <div class="price-label bust-price" id="chibi-ych-bust">
+           Bust: $6
+          </div>
+          <div class="price-label halfbody-price" id="chibi-ych-halfbody">
+           Half Body: $9
+          </div>
+         </div>
+        </div>
+       </div>
+       <div class="mt-8 text-center subtitle-font text-sm">
+        <p class="font-semibold mb-2">Additional Options:</p>
+        <p>Backgrounds: Basic $5 | Detailed / Extra +$5–10</p>
+        <p>Additional Characters: +50% of base price per extra character (prices may vary based on character complexity)</p>
+       </div>
+      </div><!-- PNGtuber Chibi -->
+      <div id="pngtuberSection" class="sub-style-section hidden">
+       <h4 class="subtitle-font text-2xl mb-6 text-center font-semibold">PNGtuber Chibi</h4><!-- Pricing Information -->
+       <div class="max-w-3xl mx-auto mb-8 bg-gray-50 p-6 rounded-lg border-2 theme-border">
+        <h5 class="subtitle-font text-xl font-bold text-center mb-4 theme-text">Pricing Structure</h5>
+        <div class="space-y-3 subtitle-font">
+         <div class="bg-white p-4 rounded-lg border-2 border-gray-300">
+          <p class="font-semibold text-lg mb-2">Base Artwork Price (Fully Rendered Chibi):</p>
+          <p>• Half Body: <strong>$22</strong></p>
+          <p>• Whole Body: <strong>$25</strong></p>
+         </div>
+         <div class="bg-white p-4 rounded-lg border-2 theme-border">
+          <p class="font-semibold text-lg mb-2">PNGtuber Main Expression Set (Required): <strong class="theme-text">+$15</strong></p>
+          <p class="text-sm text-gray-600">Includes 4 expressions: Eyes Open/Mouth Open, Eyes Closed/Mouth Closed, Eyes Open/Mouth Closed, Eyes Closed/Mouth Open</p>
+         </div>
+         <div class="bg-white p-4 rounded-lg border-2 border-gray-300">
+          <p class="font-semibold text-lg mb-2">Additional Expressions (Optional): <strong class="theme-text">+$5 each</strong></p>
+          <p class="text-sm text-gray-600">Examples: Amazed, Angry, Angry (Speaking), Heart Eyes, Sad, Happy, Blushing, or custom requests</p>
+         </div>
+        </div>
+        <div class="mt-4 bg-yellow-50 p-3 rounded-lg border-2 border-yellow-300">
+         <p class="text-sm font-semibold">📌 Notes:</p>
+         <ul class="text-sm mt-2 space-y-1">
+          <li>• All expressions delivered as separate PNG files with transparent backgrounds</li>
+          <li>• Eye and mouth positions aligned for PNGtuber use</li>
+          <li>• Minor adjustments allowed within revision limit</li>
+         </ul>
+        </div>
+       </div>
+       <div class="max-w-5xl mx-auto"><!-- Standard PNGtuber Action -->
+        <div class="mb-8">
+         <h5 class="subtitle-font text-xl font-bold text-center mb-6 theme-text">Standard PNGtuber Action</h5>
+         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6"><!-- Eyes Open - Mouth Open -->
+          <div class="bg-white p-4 rounded-lg border-2 theme-border">
+           <div class="aspect-square bg-gray-200 rounded-lg border-2 border-gray-400 flex items-center justify-center mb-3"><span class="text-gray-500 text-center text-sm p-2">Your Image Here</span>
+           </div>
+           <p class="subtitle-font text-center font-semibold text-sm">Eyes Open<br>
+            Mouth Open</p>
+          </div><!-- Eyes Closed - Mouth Closed -->
+          <div class="bg-white p-4 rounded-lg border-2 theme-border">
+           <div class="aspect-square bg-gray-200 rounded-lg border-2 border-gray-400 flex items-center justify-center mb-3"><span class="text-gray-500 text-center text-sm p-2">Your Image Here</span>
+           </div>
+           <p class="subtitle-font text-center font-semibold text-sm">Eyes Closed<br>
+            Mouth Closed</p>
+          </div><!-- Eyes Open - Mouth Closed -->
+          <div class="bg-white p-4 rounded-lg border-2 theme-border">
+           <div class="aspect-square bg-gray-200 rounded-lg border-2 border-gray-400 flex items-center justify-center mb-3"><span class="text-gray-500 text-center text-sm p-2">Your Image Here</span>
+           </div>
+           <p class="subtitle-font text-center font-semibold text-sm">Eyes Open<br>
+            Mouth Closed</p>
+          </div><!-- Eyes Closed - Mouth Open -->
+          <div class="bg-white p-4 rounded-lg border-2 theme-border">
+           <div class="aspect-square bg-gray-200 rounded-lg border-2 border-gray-400 flex items-center justify-center mb-3"><span class="text-gray-500 text-center text-sm p-2">Your Image Here</span>
+           </div>
+           <p class="subtitle-font text-center font-semibold text-sm">Eyes Closed<br>
+            Mouth Open</p>
+          </div>
+         </div>
+        </div><!-- Divider -->
+        <div class="w-full h-0.5 bg-gray-300 mb-8"></div><!-- Additional Options -->
+        <div class="mb-8">
+         <h5 class="subtitle-font text-xl font-bold text-center mb-6 theme-text">Additional Options</h5>
+         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4"><!-- Amazed Idle -->
+          <div class="bg-white p-4 rounded-lg border-2 border-gray-300">
+           <div class="aspect-square bg-gray-200 rounded-lg border-2 border-gray-400 flex items-center justify-center mb-3"><span class="text-gray-500 text-center text-sm p-2">Your Image Here</span>
+           </div>
+           <p class="subtitle-font text-center font-semibold text-sm">Amazed Idle</p>
+          </div><!-- Angry -->
+          <div class="bg-white p-4 rounded-lg border-2 border-gray-300">
+           <div class="aspect-square bg-gray-200 rounded-lg border-2 border-gray-400 flex items-center justify-center mb-3"><span class="text-gray-500 text-center text-sm p-2">Your Image Here</span>
+           </div>
+           <p class="subtitle-font text-center font-semibold text-sm">Angry</p>
+          </div><!-- Angry Speak -->
+          <div class="bg-white p-4 rounded-lg border-2 border-gray-300">
+           <div class="aspect-square bg-gray-200 rounded-lg border-2 border-gray-400 flex items-center justify-center mb-3"><span class="text-gray-500 text-center text-sm p-2">Your Image Here</span>
+           </div>
+           <p class="subtitle-font text-center font-semibold text-sm">Angry Speak</p>
+          </div><!-- Heart Eyes -->
+          <div class="bg-white p-4 rounded-lg border-2 border-gray-300">
+           <div class="aspect-square bg-gray-200 rounded-lg border-2 border-gray-400 flex items-center justify-center mb-3"><span class="text-gray-500 text-center text-sm p-2">Your Image Here</span>
+           </div>
+           <p class="subtitle-font text-center font-semibold text-sm">Heart Eyes</p>
+          </div><!-- Sad -->
+          <div class="bg-white p-4 rounded-lg border-2 border-gray-300">
+           <div class="aspect-square bg-gray-200 rounded-lg border-2 border-gray-400 flex items-center justify-center mb-3"><span class="text-gray-500 text-center text-sm p-2">Your Image Here</span>
+           </div>
+           <p class="subtitle-font text-center font-semibold text-sm">Sad</p>
+          </div><!-- Happy -->
+          <div class="bg-white p-4 rounded-lg border-2 border-gray-300">
+           <div class="aspect-square bg-gray-200 rounded-lg border-2 border-gray-400 flex items-center justify-center mb-3"><span class="text-gray-500 text-center text-sm p-2">Your Image Here</span>
+           </div>
+           <p class="subtitle-font text-center font-semibold text-sm">Happy</p>
+          </div><!-- Blushing -->
+          <div class="bg-white p-4 rounded-lg border-2 border-gray-300">
+           <div class="aspect-square bg-gray-200 rounded-lg border-2 border-gray-400 flex items-center justify-center mb-3"><span class="text-gray-500 text-center text-sm p-2">Your Image Here</span>
+           </div>
+           <p class="subtitle-font text-center font-semibold text-sm">Blushing</p>
+          </div>
+         </div>
+        </div>
+       </div>
+      </div><!-- YCH Emotes Bundle -->
+      <div id="emotesSubSection" class="sub-style-section hidden">
+       <h4 class="subtitle-font text-2xl mb-6 text-center font-semibold">YCH Emotes Bundle</h4>
+       <div class="max-w-2xl mx-auto bg-gray-50 p-8 rounded-lg border-2 theme-border">
+        <div class="space-y-4 subtitle-font text-lg">
+         <div class="flex justify-between items-center p-4 bg-white rounded-lg border-2 border-gray-300"><span class="font-semibold">1 Emote</span> <span class="theme-text font-bold text-xl">$5</span>
+         </div>
+         <div class="flex justify-between items-center p-4 bg-white rounded-lg border-2 theme-border"><span class="font-semibold">5 Emotes of Your Choice</span> <span class="theme-text font-bold text-xl">$20</span>
+         </div>
+         <div class="flex justify-between items-center p-4 bg-white rounded-lg border-2 theme-border"><span class="font-semibold">10 Emotes of Your Choice</span> <span class="theme-text font-bold text-xl">$35</span>
+         </div>
+         <div class="flex justify-between items-center p-4 bg-white rounded-lg border-2 border-gray-300"><span class="font-semibold">Animated Emotes</span> <span class="theme-text font-bold text-xl">+$10</span>
+         </div>
+        </div>
+        <div class="mt-6 grid grid-cols-5 gap-3">
+         <div class="aspect-square bg-gray-200 rounded-lg border-2 border-gray-400 flex items-center justify-center text-4xl">
+          😊
+         </div>
+         <div class="aspect-square bg-gray-200 rounded-lg border-2 border-gray-400 flex items-center justify-center text-4xl">
+          😢
+         </div>
+         <div class="aspect-square bg-gray-200 rounded-lg border-2 border-gray-400 flex items-center justify-center text-4xl">
+          😡
+         </div>
+         <div class="aspect-square bg-gray-200 rounded-lg border-2 border-gray-400 flex items-center justify-center text-4xl">
+          ❤️
+         </div>
+         <div class="aspect-square bg-gray-200 rounded-lg border-2 border-gray-400 flex items-center justify-center text-4xl">
+          👍
+         </div>
+        </div>
+       </div>
+      </div>
+     </div><!-- Anime Style -->
+     <div id="animeSection" class="style-section hidden">
+      <h3 class="title-font text-3xl mb-6 text-center">Type B – Anime Style</h3>
+      <div class="flex justify-center gap-3 mb-8"><button onclick="selectVersion('anime', 'lineart')" id="anime-lineart-btn" class="theme-bg text-black font-semibold py-2 px-6 rounded-lg hover:opacity-90 transition"> Lineart </button> <button onclick="selectVersion('anime', 'base')" id="anime-base-btn" class="bg-gray-300 text-black font-semibold py-2 px-6 rounded-lg hover:opacity-90 transition"> Base Color </button> <button onclick="selectVersion('anime', 'rendered')" id="anime-rendered-btn" class="bg-gray-300 text-black font-semibold py-2 px-6 rounded-lg hover:opacity-90 transition"> Fully Rendered </button>
+      </div>
+      <div class="commission-display">
+       <div class="image-container">
+        <div class="character-images">
+         <div class="character-image lineart-img active" id="anime-lineart"><span class="placeholder-text">Lineart<br>
+           Full Body Example<br>
+           (Your Image Here)</span>
+         </div>
+         <div class="character-image base-img dimmed" id="anime-base"><span class="placeholder-text">Base Color<br>
+           Full Body Example<br>
+           (Your Image Here)</span>
+         </div>
+         <div class="character-image rendered-img dimmed" id="anime-rendered"><span class="placeholder-text">Fully Rendered<br>
+           Full Body Example<br>
+           (Your Image Here)</span>
+         </div>
+        </div>
+        <div class="price-labels">
+         <div class="price-label headshot-price" id="anime-headshot">
+          Headshot: $8
+         </div>
+         <div class="price-label bust-price" id="anime-bust">
+          Bust: $10
+         </div>
+         <div class="price-label halfbody-price" id="anime-halfbody">
+          Half Body: $12
+         </div>
+         <div class="price-label fullbody-price" id="anime-fullbody">
+          Whole Body: $15
+         </div>
+        </div>
+       </div>
+      </div>
+      <div class="mt-8 text-center subtitle-font text-sm">
+       <p class="font-semibold mb-2">Additional Options:</p>
+       <p>Backgrounds: Basic $5 | Detailed / Extra +$5–10</p>
+       <p>Additional Characters: +50% of base price per extra character (prices may vary based on character complexity)</p>
+      </div>
+     </div>
+    </section><!-- Artist Portfolio -->
+    <section class="mb-12">
+     <h2 class="title-font text-4xl mb-6 text-center">Artist Portfolio</h2><!-- Portfolio Category Buttons -->
+     <div class="flex justify-center gap-4 mb-8 flex-wrap"><button onclick="showPortfolioCategory('chibi')" id="chibiPortBtn" class="theme-bg text-black font-semibold py-3 px-6 rounded-lg text-lg hover:opacity-90 transition"> Chibi </button> <button onclick="showPortfolioCategory('headshots')" id="headshotsPortBtn" class="bg-gray-300 text-black font-semibold py-3 px-6 rounded-lg text-lg hover:opacity-90 transition"> Headshots </button> <button onclick="showPortfolioCategory('busts')" id="bustsPortBtn" class="bg-gray-300 text-black font-semibold py-3 px-6 rounded-lg text-lg hover:opacity-90 transition"> Busts </button> <button onclick="showPortfolioCategory('halfbody')" id="halfbodyPortBtn" class="bg-gray-300 text-black font-semibold py-3 px-6 rounded-lg text-lg hover:opacity-90 transition"> Half Body </button> <button onclick="showPortfolioCategory('fullbody')" id="fullbodyPortBtn" class="bg-gray-300 text-black font-semibold py-3 px-6 rounded-lg text-lg hover:opacity-90 transition"> Full Body </button>
+     </div><!-- Chibi Portfolio -->
+     <div id="chibiPortfolio" class="portfolio-category">
+      <h3 class="subtitle-font text-2xl mb-6 text-center font-semibold">Chibi Examples</h3>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+       <div class="aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center"><span class="text-gray-500 text-center text-sm p-2">Chibi Art 1</span>
+       </div>
+       <div class="aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center"><span class="text-gray-500 text-center text-sm p-2">Chibi Art 2</span>
+       </div>
+       <div class="aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center"><span class="text-gray-500 text-center text-sm p-2">Chibi Art 3</span>
+       </div>
+       <div class="aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center"><span class="text-gray-500 text-center text-sm p-2">Chibi Art 4</span>
+       </div>
+      </div>
+     </div><!-- Headshots Portfolio -->
+     <div id="headshotsPortfolio" class="portfolio-category">
+      <h3 class="subtitle-font text-2xl mb-6 text-center font-semibold">Headshot Examples</h3>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+       <div class="aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center"><span class="text-gray-500 text-center text-sm p-2">Headshot Art 1</span>
+       </div>
+       <div class="aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center"><span class="text-gray-500 text-center text-sm p-2">Headshot Art 2</span>
+       </div>
+       <div class="aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center"><span class="text-gray-500 text-center text-sm p-2">Headshot Art 3</span>
+       </div>
+       <div class="aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center"><span class="text-gray-500 text-center text-sm p-2">Headshot Art 4</span>
+       </div>
+      </div>
+     </div><!-- Busts Portfolio -->
+     <div id="bustsPortfolio" class="portfolio-category hidden">
+      <h3 class="subtitle-font text-2xl mb-6 text-center font-semibold">Bust Examples</h3>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+       <div class="aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center"><span class="text-gray-500 text-center text-sm p-2">Bust Art 1</span>
+       </div>
+       <div class="aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center"><span class="text-gray-500 text-center text-sm p-2">Bust Art 2</span>
+       </div>
+       <div class="aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center"><span class="text-gray-500 text-center text-sm p-2">Bust Art 3</span>
+       </div>
+       <div class="aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center"><span class="text-gray-500 text-center text-sm p-2">Bust Art 4</span>
+       </div>
+      </div>
+     </div><!-- Half Body Portfolio -->
+     <div id="halfbodyPortfolio" class="portfolio-category hidden">
+      <h3 class="subtitle-font text-2xl mb-6 text-center font-semibold">Half Body Examples</h3>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+       <div class="aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center"><span class="text-gray-500 text-center text-sm p-2">Half Body Art 1</span>
+       </div>
+       <div class="aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center"><span class="text-gray-500 text-center text-sm p-2">Half Body Art 2</span>
+       </div>
+       <div class="aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center"><span class="text-gray-500 text-center text-sm p-2">Half Body Art 3</span>
+       </div>
+       <div class="aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center"><span class="text-gray-500 text-center text-sm p-2">Half Body Art 4</span>
+       </div>
+      </div>
+     </div><!-- Full Body Portfolio -->
+     <div id="fullbodyPortfolio" class="portfolio-category hidden">
+      <h3 class="subtitle-font text-2xl mb-6 text-center font-semibold">Full Body Examples</h3>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+       <div class="aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center"><span class="text-gray-500 text-center text-sm p-2">Full Body Art 1</span>
+       </div>
+       <div class="aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center"><span class="text-gray-500 text-center text-sm p-2">Full Body Art 2</span>
+       </div>
+       <div class="aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center"><span class="text-gray-500 text-center text-sm p-2">Full Body Art 3</span>
+       </div>
+       <div class="aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center"><span class="text-gray-500 text-center text-sm p-2">Full Body Art 4</span>
+       </div>
+      </div>
+     </div>
+    </section><!-- Payment Methods -->
+    <section class="mb-12 bg-gray-50 p-6 rounded-lg border-2 theme-border">
+     <h2 class="title-font text-3xl mb-4">Payment Methods</h2>
+     <p class="subtitle-font text-lg">Accepted: <strong>Gcash</strong> and <strong>PayPal</strong></p>
+    </section><!-- Usage Licenses -->
+    <section class="mb-12">
+     <h2 class="title-font text-3xl mb-4">Usage &amp; Licensing</h2>
+     <div class="space-y-4 subtitle-font">
+      <div class="bg-gray-50 p-4 rounded-lg border-2 theme-border">
+       <h3 class="font-bold text-xl mb-2">Personal Use</h3>
+       <p>For social media, Discord, or private display only. Credit is appreciated. <strong>(included in base price)</strong></p>
+      </div>
+      <div class="bg-gray-50 p-4 rounded-lg border-2 theme-border">
+       <h3 class="font-bold text-xl mb-2">Streamer Commercial License</h3>
+       <p>Allows usage for logos, watermarks, thumbnails, and streamer content. <strong>Add $15 per artwork</strong></p>
+      </div>
+      <div class="bg-gray-50 p-4 rounded-lg border-2 theme-border">
+       <h3 class="font-bold text-xl mb-2">Merch Commercial License</h3>
+       <p>Includes streamer license and allows selling, advertising, and merch use with credit. <strong>+50% of the base commission price</strong></p>
+      </div>
+     </div>
+    </section><!-- What I Can/Can't Do -->
+    <section class="mb-12">
+     <h2 class="title-font text-3xl mb-4">What I Can / Can't Do</h2>
+     <div class="grid md:grid-cols-2 gap-6">
+      <div class="bg-green-50 p-6 rounded-lg border-2 border-green-500">
+       <h3 class="font-bold text-xl mb-3 text-green-700">✓ Can Do</h3>
+       <ul class="subtitle-font space-y-2">
+        <li>• Fanart, OCs, Ships</li>
+        <li>• PFP/Icons, Chibis</li>
+        <li>• Light action/dynamic poses (if reference provided)</li>
+       </ul>
+      </div>
+      <div class="bg-red-50 p-6 rounded-lg border-2 border-red-500">
+       <h3 class="font-bold text-xl mb-3 text-red-700">✗ Can't Do</h3>
+       <ul class="subtitle-font space-y-2">
+        <li>• Mecha, heavy NSFW, furries</li>
+        <li>• Hate symbols/offensive content</li>
+        <li>• Gore/extreme violence</li>
+        <li>• Complicated perspectives</li>
+       </ul>
+      </div>
+     </div>
+    </section><!-- Terms & Conditions -->
+    <section class="mb-12"><button onclick="toggleTerms()" class="w-full theme-bg text-black font-bold py-4 px-6 rounded-lg text-2xl hover:opacity-90 transition flex items-center justify-between"> <span class="title-font">Terms &amp; Conditions</span> <span id="termsArrow" class="text-3xl">▼</span> </button>
+     <div id="termsContent" class="hidden bg-gray-50 p-6 rounded-b-lg border-2 border-t-0 theme-border subtitle-font space-y-6 mt-0">
+      <p class="font-semibold text-lg text-center">By commissioning me, you confirm that you have read and agreed to the following terms. Please take a moment to read everything carefully before placing an order.</p>
+      <div class="bg-white p-5 rounded-lg border-2 border-gray-200">
+       <h3 class="font-bold text-xl mb-3 theme-text">💳 Payment</h3>
+       <ul class="space-y-2 text-base">
+        <li>• A 50% deposit is required to begin work after the initial sketch is approved. This secures your slot in my schedule and allows me to start the commission.</li>
+        <li>• The remaining balance must be paid before the final artwork is delivered.</li>
+        <li>• Once work has started, deposits are non-refundable, as this time and effort cannot be recovered.</li>
+        <li>• If the buyer cancels after work has begun, the deposit will be kept to compensate for completed progress.</li>
+        <li>• If the artist needs to cancel for any reason, a partial or full refund will be issued depending on the stage of completion.</li>
+        <li>• Chargebacks are not allowed. Filing a chargeback will result in loss of usage rights to the artwork and may lead to further action.</li>
+       </ul>
+      </div>
+      <div class="bg-white p-5 rounded-lg border-2 border-gray-200">
+       <h3 class="font-bold text-xl mb-3 theme-text">✏️ Revisions</h3>
+       <ul class="space-y-2 text-base">
+        <li>• You may request up to three revisions during the sketch stage to adjust details and ensure the concept is right.</li>
+        <li>• Small adjustments such as color tweaks or minor expression changes are welcome during the appropriate stages.</li>
+        <li>• Once the sketch is approved, no further changes will be made unless the issue is due to an error on my part. Any mistakes I make will always be corrected at no extra cost.</li>
+        <li>• Major redesigns or complete changes after approval may require an additional fee.</li>
+       </ul>
+      </div>
+      <div class="bg-white p-5 rounded-lg border-2 border-gray-200">
+       <h3 class="font-bold text-xl mb-3 theme-text">📦 Delivery &amp; Turnaround</h3>
+       <ul class="space-y-2 text-base">
+        <li>• Commissions may take up to one month depending on complexity, queue size, health, school, or personal matters.</li>
+        <li>• An estimated turnaround time will be provided, and I will keep you updated if delays occur.</li>
+        <li>• Final digital files are delivered via a Dropbox link, which will remain available for two weeks unless otherwise requested. Please download your files within that time.</li>
+        <li>• Clear references for poses, colors, outfits, and character details are required to ensure the best possible result.</li>
+       </ul>
+      </div>
+      <div class="bg-white p-5 rounded-lg border-2 border-gray-200">
+       <h3 class="font-bold text-xl mb-3 theme-text">💬 Communication</h3>
+       <p class="text-base">Clear communication helps everything run smoothly. If no response is received within one week, I will proceed with the commission based on the latest approved details and deliver the artwork as is.</p>
+      </div>
+      <div class="bg-white p-5 rounded-lg border-2 border-gray-200">
+       <h3 class="font-bold text-xl mb-3 theme-text">📜 Usage &amp; Licensing</h3>
+       <p class="font-semibold text-base mb-2">Personal Use:</p>
+       <p class="text-base mb-4">Artwork may be used for personal display such as profile pictures, banners, social media posts with credit, or printing for personal use only.</p>
+       <p class="font-semibold text-base mb-2">Commercial Use:</p>
+       <ul class="space-y-2 text-base">
+        <li>• Commercial use is not included by default and must be approved in writing.</li>
+        <li>• <strong>Streamer Commercial License: $25 USD</strong> - Allows use for streaming content, overlays, thumbnails, watermarks, and logos.</li>
+        <li>• <strong>Merchandise Commercial License: $60 USD</strong> - Includes streamer usage and allows selling, advertising, and merchandise use with proper credit.</li>
+        <li>• If commercial use is requested after a commission is completed, the applicable license fee will still apply.</li>
+       </ul>
+      </div>
+      <div class="bg-white p-5 rounded-lg border-2 border-gray-200">
+       <h3 class="font-bold text-xl mb-3 theme-text">🔗 Credit &amp; Sharing</h3>
+       <ul class="space-y-2 text-base">
+        <li>• Credit must be given when posting the artwork publicly through tagging, labeling, or verbal acknowledgment. One initial credit per platform is sufficient.</li>
+        <li>• You may not remove signatures or watermarks.</li>
+        <li>• If you prefer the artwork not to be posted publicly, please communicate this clearly before work begins.</li>
+        <li>• Unless requested otherwise, I may share completed commissions for portfolio, social media, and promotional purposes.</li>
+       </ul>
+      </div>
+      <div class="bg-white p-5 rounded-lg border-2 border-gray-200">
+       <h3 class="font-bold text-xl mb-3 theme-text">©️ Copyright &amp; Intellectual Property</h3>
+       <ul class="space-y-2 text-base">
+        <li>• All artwork remains the intellectual property of the artist. You are purchasing usage rights, not ownership.</li>
+        <li>• AI and NFT use is strictly prohibited. My work may not be used in AI datasets, engines, generators, or minted as NFTs under any circumstances.</li>
+        <li>• Unauthorized commercial use is not allowed and may result in further action.</li>
+       </ul>
+      </div>
+      <div class="bg-white p-5 rounded-lg border-2 border-gray-200">
+       <h3 class="font-bold text-xl mb-3 theme-text">🎨 Artist Rights</h3>
+       <ul class="space-y-2 text-base">
+        <li>• I reserve the right to decline commissions that fall outside my skill set or involve subjects I am not comfortable drawing.</li>
+        <li>• I may use commissioned artwork to promote my services, post on social media, display in my portfolio, or create prints for fanart commissions.</li>
+       </ul>
+      </div>
+      <div class="bg-white p-5 rounded-lg border-2 border-gray-200">
+       <h3 class="font-bold text-xl mb-3 theme-text">✅ Commissioner Rights &amp; Restrictions</h3>
+       <p class="font-semibold text-base mb-2">You may:</p>
+       <ul class="space-y-2 text-base mb-4">
+        <li>• Use the artwork for personal purposes only unless commercial rights are purchased.</li>
+        <li>• Print the artwork for yourself.</li>
+        <li>• Post it on social media with proper credit to @Abortius.</li>
+       </ul>
+       <p class="font-semibold text-base mb-2">You may not:</p>
+       <ul class="space-y-2 text-base">
+        <li>• Use the artwork commercially without permission.</li>
+        <li>• Claim the artwork as your own or fail to credit the artist.</li>
+        <li>• Remove signatures or watermarks.</li>
+        <li>• Resell, redistribute, or modify the artwork without consent.</li>
+        <li>����� Use personal use artwork for merch, streaming, or commercial projects.</li>
+       </ul>
+      </div>
+      <div class="bg-white p-5 rounded-lg border-2 border-gray-200">
+       <h3 class="font-bold text-xl mb-3 theme-text">🚫 Right to Refusal</h3>
+       <ul class="space-y-2 text-base">
+        <li>• The buyer may decline a commission before completion, but any payments made are non-refundable once work has started.</li>
+        <li>• The artist reserves the right to refuse or cancel a commission at any time. If cancellation occurs after work has begun, a partial refund will be issued based on progress.</li>
+       </ul>
+      </div>
+      <div class="bg-white p-5 rounded-lg border-2 border-gray-200">
+       <h3 class="font-bold text-xl mb-3 theme-text">⚠️ Blacklist Policy</h3>
+       <p class="text-base">Repeated or serious violations of these terms may result in refusal of future commissions. In severe cases, evidence may be shared with other artists to protect the community.</p>
+      </div>
+      <div class="bg-white p-5 rounded-lg border-2 border-gray-200">
+       <h3 class="font-bold text-xl mb-3 theme-text">📝 Final Agreement</h3>
+       <p class="text-base">Once the deposit is paid, all terms above are considered accepted and binding. This ensures clarity, fairness, and a smooth experience for both the artist and the client.</p>
+      </div>
+     </div>
+    </section><!-- Ready to Order Section -->
+    <section class="mb-12 text-center">
+     <div class="bg-gradient-to-r from-yellow-100 to-yellow-50 p-8 rounded-lg border-4 theme-border">
+      <h2 class="title-font text-4xl mb-4">Ready to Order?</h2>
+      <p class="subtitle-font text-lg mb-6">Contact me through my socials and fill out the commission form to get started!</p>
+      <p class="subtitle-font text-sm mb-8 text-gray-600">The form helps document your order details and confirms you understand the terms and conditions.</p>
+      <div class="flex flex-col md:flex-row gap-4 justify-center items-center max-w-2xl mx-auto"><button onclick="openSocials()" class="theme-bg text-black font-bold py-4 px-8 rounded-lg text-xl hover:opacity-90 transition w-full md:w-auto"> 📱 Contact Me </button> <a href="https://forms.gle/1yaN8HAtKcf9YQ5r5" target="_blank" rel="noopener noreferrer" class="bg-black text-white font-bold py-4 px-8 rounded-lg text-xl hover:opacity-90 transition w-full md:w-auto"> 📝 Fill Commission Form </a>
+      </div>
+     </div>
+    </section>
+   </div>
+  </div><!-- Socials Modal -->
+  <div id="socialsModal" class="modal">
+   <div class="modal-content"><span class="close" onclick="closeSocials()">×</span>
+    <h2 class="title-font text-3xl mb-6">Connect With Me</h2>
+    <div class="space-y-4"><a href="https://www.instagram.com/jadentearl" target="_blank" rel="noopener noreferrer" class="block theme-bg text-black font-semibold py-3 px-6 rounded-lg text-center hover:opacity-90 transition"> 📷 Instagram </a> <a href="https://www.tiktok.com/@jadentearl" target="_blank" rel="noopener noreferrer" class="block theme-bg text-black font-semibold py-3 px-6 rounded-lg text-center hover:opacity-90 transition"> 🎵 TikTok </a> <a href="https://x.com/jadentearl" target="_blank" rel="noopener noreferrer" class="block theme-bg text-black font-semibold py-3 px-6 rounded-lg text-center hover:opacity-90 transition"> ��� X (Twitter) </a>
+    </div>
+   </div>
+  </div>
+  <script>
+    const defaultConfig = {
+      artist_name: "Jaden Tearl",
+      section_title: "Commission Options"
+    };
+
+    let currentStyle = 'chibi-typeA';
+    let currentSubStyle = 'standard';
+    let currentVersion = {
+      'chibi-typeA': 'lineart',
+      'chibi-ych': 'lineart',
+      'anime': 'lineart'
+    };
+
+    const prices = {
+      'chibi-typeA': {
+        lineart: { headshot: '$5', bust: '$7', halfbody: '$10', fullbody: '$12' },
+        base: { headshot: '$10', bust: '$12', halfbody: '$15', fullbody: '$20' },
+        rendered: { headshot: '$15', bust: '$18', halfbody: '$22', fullbody: '$25' }
+      },
+      'chibi-ych': {
+        lineart: { headshot: '$5', bust: '$6', halfbody: '$9' },
+        base: { headshot: '$8', bust: '$10', halfbody: '$14' },
+        rendered: { headshot: '$13', bust: '$14', halfbody: '$20' }
+      },
+      'anime': {
+        lineart: { headshot: '$8', bust: '$10', halfbody: '$12', fullbody: '$15' },
+        base: { headshot: '$12', bust: '$15', halfbody: '$18', fullbody: '$25' },
+        rendered: { headshot: '$20', bust: '$25', halfbody: '$35', fullbody: '$45' }
+      }
+    };
+
+    function openSocials() {
+      document.getElementById('socialsModal').style.display = 'block';
+    }
+
+    function closeSocials() {
+      document.getElementById('socialsModal').style.display = 'none';
+    }
+
+    function scrollToCommissions() {
+      document.getElementById('commissionSection').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function showStyle(style) {
+      currentStyle = style;
+      
+      // Hide all sections
+      document.getElementById('chibiTypeASection').classList.add('hidden');
+      document.getElementById('animeSection').classList.add('hidden');
+      
+      // Reset all button styles
+      document.getElementById('chibiTypeABtn').classList.remove('theme-bg');
+      document.getElementById('chibiTypeABtn').classList.add('bg-gray-300');
+      document.getElementById('animeBtn').classList.remove('theme-bg');
+      document.getElementById('animeBtn').classList.add('bg-gray-300');
+      
+      // Show selected section and highlight button
+      if (style === 'chibi-typeA') {
+        document.getElementById('chibiTypeASection').classList.remove('hidden');
+        document.getElementById('chibiTypeABtn').classList.add('theme-bg');
+        document.getElementById('chibiTypeABtn').classList.remove('bg-gray-300');
+        showSubStyle(currentSubStyle);
+      } else if (style === 'anime') {
+        document.getElementById('animeSection').classList.remove('hidden');
+        document.getElementById('animeBtn').classList.add('theme-bg');
+        document.getElementById('animeBtn').classList.remove('bg-gray-300');
+        selectVersion('anime', currentVersion['anime']);
+      }
+    }
+
+    function showSubStyle(subStyle) {
+      currentSubStyle = subStyle;
+      
+      // Hide all sub-sections
+      document.getElementById('standardSection').classList.add('hidden');
+      document.getElementById('ychSection').classList.add('hidden');
+      document.getElementById('pngtuberSection').classList.add('hidden');
+      document.getElementById('emotesSubSection').classList.add('hidden');
+      
+      // Reset all sub-button styles
+      document.getElementById('standardBtn').classList.remove('theme-bg');
+      document.getElementById('standardBtn').classList.add('bg-gray-300');
+      document.getElementById('ychBtn').classList.remove('theme-bg');
+      document.getElementById('ychBtn').classList.add('bg-gray-300');
+      document.getElementById('pngtuberBtn').classList.remove('theme-bg');
+      document.getElementById('pngtuberBtn').classList.add('bg-gray-300');
+      document.getElementById('emotesSubBtn').classList.remove('theme-bg');
+      document.getElementById('emotesSubBtn').classList.add('bg-gray-300');
+      
+      // Show selected sub-section and highlight button
+      if (subStyle === 'standard') {
+        document.getElementById('standardSection').classList.remove('hidden');
+        document.getElementById('standardBtn').classList.add('theme-bg');
+        document.getElementById('standardBtn').classList.remove('bg-gray-300');
+        selectVersion('chibi-typeA', currentVersion['chibi-typeA']);
+      } else if (subStyle === 'ych') {
+        document.getElementById('ychSection').classList.remove('hidden');
+        document.getElementById('ychBtn').classList.add('theme-bg');
+        document.getElementById('ychBtn').classList.remove('bg-gray-300');
+        selectVersion('chibi-ych', currentVersion['chibi-ych']);
+      } else if (subStyle === 'pngtuber') {
+        document.getElementById('pngtuberSection').classList.remove('hidden');
+        document.getElementById('pngtuberBtn').classList.add('theme-bg');
+        document.getElementById('pngtuberBtn').classList.remove('bg-gray-300');
+      } else if (subStyle === 'emotes') {
+        document.getElementById('emotesSubSection').classList.remove('hidden');
+        document.getElementById('emotesSubBtn').classList.add('theme-bg');
+        document.getElementById('emotesSubBtn').classList.remove('bg-gray-300');
+      }
+    }
+
+    function selectVersion(style, version) {
+      currentVersion[style] = version;
+      
+      ['lineart', 'base', 'rendered'].forEach(v => {
+        const layer = document.getElementById(`${style}-${v}`);
+        const btn = document.getElementById(`${style}-${v}-btn`);
+        
+        if (layer && btn) {
+          if (v === version) {
+            layer.classList.add('active');
+            layer.classList.remove('dimmed');
+            btn.classList.add('theme-bg');
+            btn.classList.remove('bg-gray-300');
+          } else {
+            layer.classList.remove('active');
+            layer.classList.add('dimmed');
+            btn.classList.remove('theme-bg');
+            btn.classList.add('bg-gray-300');
+          }
+        }
+      });
+      
+      updatePrices(style, version);
+    }
+
+    function updatePrices(style, version) {
+      if (!prices[style] || !prices[style][version]) return;
+      
+      const priceData = prices[style][version];
+      const headshot = document.getElementById(`${style}-headshot`);
+      const bust = document.getElementById(`${style}-bust`);
+      const halfbody = document.getElementById(`${style}-halfbody`);
+      const fullbody = document.getElementById(`${style}-fullbody`);
+      
+      if (headshot) headshot.textContent = `Headshot: ${priceData.headshot}`;
+      if (bust) bust.textContent = `Bust: ${priceData.bust}`;
+      if (halfbody) halfbody.textContent = `Half Body: ${priceData.halfbody}`;
+      if (fullbody && priceData.fullbody) fullbody.textContent = `Whole Body: ${priceData.fullbody}`;
+    }
+
+    window.onclick = function(event) {
+      const modal = document.getElementById('socialsModal');
+      if (event.target == modal) {
+        closeSocials();
+      }
+    }
+
+    async function onConfigChange(config) {
+      const artistName = config.artist_name || defaultConfig.artist_name;
+      const sectionTitle = config.section_title || defaultConfig.section_title;
+      
+      const titleElements = document.querySelectorAll('.title-font');
+      if (titleElements[1]) {
+        titleElements[1].textContent = sectionTitle;
+      }
+    }
+
+    function mapToCapabilities(config) {
+      return {
+        recolorables: [],
+        borderables: [],
+        fontEditable: undefined,
+        fontSizeable: undefined
+      };
+    }
+
+    function mapToEditPanelValues(config) {
+      return new Map([
+        ["artist_name", config.artist_name || defaultConfig.artist_name],
+        ["section_title", config.section_title || defaultConfig.section_title]
+      ]);
+    }
+
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange,
+        mapToCapabilities,
+        mapToEditPanelValues
+      });
+    }
+
+    // Initialize first style
+    showSubStyle('standard');
+
+    // Portfolio category switching
+    function showPortfolioCategory(category) {
+      // Hide all portfolio categories
+      document.getElementById('chibiPortfolio').classList.add('hidden');
+      document.getElementById('headshotsPortfolio').classList.add('hidden');
+      document.getElementById('bustsPortfolio').classList.add('hidden');
+      document.getElementById('halfbodyPortfolio').classList.add('hidden');
+      document.getElementById('fullbodyPortfolio').classList.add('hidden');
+      
+      // Reset all button styles
+      document.getElementById('chibiPortBtn').classList.remove('theme-bg');
+      document.getElementById('chibiPortBtn').classList.add('bg-gray-300');
+      document.getElementById('headshotsPortBtn').classList.remove('theme-bg');
+      document.getElementById('headshotsPortBtn').classList.add('bg-gray-300');
+      document.getElementById('bustsPortBtn').classList.remove('theme-bg');
+      document.getElementById('bustsPortBtn').classList.add('bg-gray-300');
+      document.getElementById('halfbodyPortBtn').classList.remove('theme-bg');
+      document.getElementById('halfbodyPortBtn').classList.add('bg-gray-300');
+      document.getElementById('fullbodyPortBtn').classList.remove('theme-bg');
+      document.getElementById('fullbodyPortBtn').classList.add('bg-gray-300');
+      
+      // Show selected category and highlight button
+      if (category === 'chibi') {
+        document.getElementById('chibiPortfolio').classList.remove('hidden');
+        document.getElementById('chibiPortBtn').classList.add('theme-bg');
+        document.getElementById('chibiPortBtn').classList.remove('bg-gray-300');
+      } else if (category === 'headshots') {
+        document.getElementById('headshotsPortfolio').classList.remove('hidden');
+        document.getElementById('headshotsPortBtn').classList.add('theme-bg');
+        document.getElementById('headshotsPortBtn').classList.remove('bg-gray-300');
+      } else if (category === 'busts') {
+        document.getElementById('bustsPortfolio').classList.remove('hidden');
+        document.getElementById('bustsPortBtn').classList.add('theme-bg');
+        document.getElementById('bustsPortBtn').classList.remove('bg-gray-300');
+      } else if (category === 'halfbody') {
+        document.getElementById('halfbodyPortfolio').classList.remove('hidden');
+        document.getElementById('halfbodyPortBtn').classList.add('theme-bg');
+        document.getElementById('halfbodyPortBtn').classList.remove('bg-gray-300');
+      } else if (category === 'fullbody') {
+        document.getElementById('fullbodyPortfolio').classList.remove('hidden');
+        document.getElementById('fullbodyPortBtn').classList.add('theme-bg');
+        document.getElementById('fullbodyPortBtn').classList.remove('bg-gray-300');
+      }
+    }
+
+    // Toggle Terms & Conditions
+    function toggleTerms() {
+      const termsContent = document.getElementById('termsContent');
+      const termsArrow = document.getElementById('termsArrow');
+      
+      if (termsContent.classList.contains('hidden')) {
+        termsContent.classList.remove('hidden');
+        termsArrow.textContent = '▲';
+      } else {
+        termsContent.classList.add('hidden');
+        termsArrow.textContent = '▼';
+      }
+    }
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b47f97e74148d0f',t:'MTc2NjgyOTY2NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
