@@ -1,0 +1,2622 @@
+<!doctype html>
+<html lang="en" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Artist Commission Sheet</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&amp;display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @font-face {
+      font-family: 'Sailors';
+      src: url('https://fonts.cdnfonts.com/s/14984/SAILORS.woff') format('woff');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    body {
+      box-sizing: border-box;
+    }
+
+    .title-font {
+      font-family: 'Sailors', serif;
+      color: #000000;
+    }
+
+    .subtitle-font {
+      font-family: 'Poppins', sans-serif;
+      color: #000000;
+    }
+
+    @keyframes sparkle {
+      0%, 100% {
+        opacity: 0;
+        transform: scale(0);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .glitter-bg {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glitter-bg::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        radial-gradient(circle, white 1px, transparent 1px),
+        radial-gradient(circle, white 1px, transparent 1px),
+        radial-gradient(circle, white 1px, transparent 1px);
+      background-size: 50px 50px, 80px 80px, 100px 100px;
+      background-position: 0 0, 40px 60px, 130px 270px;
+      animation: sparkle 3s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    .glitter-bg::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        radial-gradient(circle, rgba(255,255,255,0.8) 1px, transparent 1px),
+        radial-gradient(circle, rgba(255,255,255,0.6) 1px, transparent 1px);
+      background-size: 60px 60px, 90px 90px;
+      background-position: 25px 25px, 75px 75px;
+      animation: sparkle 2s ease-in-out infinite reverse;
+      pointer-events: none;
+    }
+
+    .theme-bg {
+      background-color: #f9c501;
+    }
+
+    .theme-border {
+      border-color: #f9c501;
+    }
+
+    .theme-text {
+      color: #f9c501;
+    }
+
+    .commission-display {
+      display: flex;
+      justify-content: center;
+      margin: 2rem 0;
+      overflow-x: auto;
+      padding: 2rem;
+    }
+
+    .image-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .character-images {
+      position: relative;
+      display: flex;
+      align-items: center;
+      height: 450px;
+      min-width: 700px;
+    }
+
+    .character-image {
+      position: absolute;
+      width: 280px;
+      height: 420px;
+      border: 3px solid #000;
+      background: #f5f5f5;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: #666;
+      overflow: hidden;
+    }
+
+    .character-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Image fitting for all image containers */
+    .w-80.h-80 img,
+    .w-full.h-48 img,
+    .w-full.h-64 img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .placeholder-text {
+      text-align: center;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .lineart-img {
+      left: 0;
+      z-index: 1;
+    }
+
+    .base-img {
+      left: 180px;
+      z-index: 2;
+    }
+
+    .rendered-img {
+      left: 360px;
+      z-index: 3;
+    }
+
+    .character-image.dimmed {
+      opacity: 0.5;
+    }
+
+    .character-image.active {
+      opacity: 1;
+      transform: scale(1.05);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      z-index: 10;
+    }
+
+    /* YCH Base Chibi Styling */
+    .ych-base-placeholder {
+      position: relative;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid #333;
+      padding: 0;
+      overflow: visible;
+      transition: all 0.3s ease;
+    }
+
+    .ych-base-placeholder:hover {
+      transform: translateY(-8px);
+      filter: brightness(1.1);
+    }
+
+    .ych-base-image {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center bottom;
+    }
+
+    .ych-art-examples-btn {
+      margin-top: 12px;
+      padding: 8px 16px;
+      font-size: 13px;
+      background: transparent;
+      border: 2px solid #ccc;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      color: #666;
+      transition: all 0.2s ease;
+    }
+
+    .ych-art-examples-btn:hover {
+      border-color: #f9c501;
+      color: #f9c501;
+      background: rgba(249, 197, 1, 0.05);
+    }
+
+    .ych-examples-section {
+      display: none;
+      margin-top: 12px;
+      padding: 12px;
+      background: rgba(249, 197, 1, 0.03);
+      border-radius: 6px;
+      border: 1px solid rgba(249, 197, 1, 0.2);
+    }
+
+    .ych-examples-section.visible {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .ych-examples-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 8px;
+    }
+
+    .ych-example-thumbnail {
+      aspect-ratio: 1;
+      background: #fff;
+      border: 2px solid #ddd;
+      border-radius: 6px;
+      padding: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: #999;
+      text-align: center;
+      font-weight: 500;
+      overflow: hidden;
+    }
+
+    .ych-example-thumbnail:hover {
+      border-color: #f9c501;
+      box-shadow: 0 4px 12px rgba(249, 197, 1, 0.3);
+      transform: scale(1.05);
+    }
+
+    .price-labels {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      margin-left: 40px;
+      height: 420px;
+      padding: 20px 0;
+    }
+
+    .price-label {
+      background: white;
+      border: 2px solid #f9c501;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      font-size: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      white-space: nowrap;
+      min-width: 160px;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+    }
+
+    .modal-content {
+      background-color: #fefefe;
+      margin: 10% auto;
+      padding: 2rem;
+      border: 3px solid #f9c501;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 500px;
+    }
+
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .close:hover {
+      color: #000;
+    }
+
+    /* Lightbox Styles */
+    .lightbox {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.9);
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .lightbox-content {
+      position: relative;
+      margin: 5% auto;
+      padding: 0;
+      width: 90%;
+      max-width: 450px;
+      max-height: 92vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: zoomIn 0.3s ease;
+    }
+
+    @keyframes zoomIn {
+      from { transform: scale(0.7); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .lightbox-image {
+      width: 100%;
+      height: auto;
+      border: 4px solid #f9c501;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .lightbox-image img {
+      width: 100%;
+      height: auto;
+      max-height: 90vh;
+      object-fit: contain;
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: -40px;
+      right: 0;
+      color: #fff;
+      font-size: 40px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: color 0.3s ease;
+      background: rgba(0,0,0,0.5);
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .lightbox-close:hover {
+      color: #f9c501;
+      transform: rotate(90deg);
+      transition: all 0.3s ease;
+    }
+
+    .portfolio-item {
+      transition: all 0.3s ease;
+    }
+
+    .portfolio-item:hover {
+      transform: scale(1.05);
+    }
+
+    .portfolio-item img,
+    .aspect-square img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Floating CTA Button */
+    .floating-cta {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 999;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.05);
+      }
+    }
+
+    /* Color coding for sections */
+    .chibi-section-bg {
+      background: linear-gradient(to bottom, #fff9e6, #ffffff);
+    }
+
+    .anime-section-bg {
+      background: linear-gradient(to bottom, #ffe6f0, #ffffff);
+    }
+
+    @media (max-width: 768px) {
+      .commission-display {
+        padding: 1rem;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .image-container {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .character-images {
+        height: auto;
+        min-width: 100%;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+      }
+      
+      .character-image {
+        position: relative !important;
+        width: 250px;
+        height: 350px;
+        left: 0 !important;
+      }
+
+      .character-image.dimmed {
+        display: none;
+      }
+
+      .price-labels {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        height: auto;
+        margin-left: 0;
+        gap: 0.5rem;
+      }
+      
+      .price-label {
+        font-size: 13px;
+        padding: 0.5rem;
+        min-width: 120px;
+      }
+
+      .floating-cta {
+        bottom: 10px;
+        right: 10px;
+        left: 10px;
+        width: auto;
+      }
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full subtitle-font">
+  <div class="w-full h-full overflow-auto bg-white">
+   <div class="max-w-7xl mx-auto p-6"><!-- Artist Profile Section -->
+    <section class="mb-12"><!-- Header Banner -->
+     <div class="w-full border-4 theme-border rounded-lg mb-6 overflow-hidden"><img src="../WEBSITE BANNER.png" alt="Jade's Art Corner Banner" class="w-full h-auto object-contain">
+     </div>
+     <div class="grid md:grid-cols-2 gap-8 items-start"><!-- Artist Image -->
+      <div class="flex flex-col items-center">
+       <div class="w-80 h-80 border-4 theme-border rounded-lg overflow-hidden"><img src="../imgs/Avatar.png.png" alt="Jade's Avatar" class="w-full h-full object-cover object-center">
+       </div>
+       <p class="subtitle-font text-2xl font-bold mt-4 theme-text">@jadentearl</p><button onclick="toggleAboutMe()" class="bg-white border-2 theme-border text-black font-semibold py-2 px-6 rounded-full text-base hover:theme-bg transition flex items-center justify-center gap-2 mt-3"> <span>About Me</span> <span id="aboutMeArrow" class="text-sm">▼</span> </button>
+      </div><!-- Title and Action Buttons -->
+      <div class="flex flex-col gap-4">
+       <h1 class="title-font text-3xl text-center font-bold uppercase border-4 theme-border rounded-lg py-3 px-6 bg-white" style="color: #000000;">JADE'S ART CORNER</h1><button onclick="openSocials()" class="theme-bg text-black font-bold py-4 px-8 rounded-lg text-xl hover:opacity-90 transition"> Socials </button> <button onclick="openShop()" class="theme-bg text-black font-bold py-4 px-8 rounded-lg text-xl hover:opacity-90 transition"> Shop </button> <button onclick="scrollToCommissions()" class="theme-bg text-black font-bold py-4 px-8 rounded-lg text-xl hover:opacity-90 transition"> Commission Section </button>
+      </div>
+     </div><!-- About Me Collapsible Section -->
+     <div id="aboutMeContent" class="hidden mt-6 bg-gradient-to-br from-yellow-50 to-white p-6 rounded-2xl border-2 theme-border max-w-4xl mx-auto">
+      <h3 class="subtitle-font text-xl font-bold mb-3 theme-text text-center">✨ About Me ✨</h3>
+      <div class="subtitle-font text-base text-gray-700 space-y-2">
+       <p>Hi! I'm Jade. Welcome to my page and sorry in advance for the chaos.</p>
+       <p>I mostly create cute chibi art and semi anime style illustrations, and I love bringing characters to life through stickers, button pins, and other merch goodies.</p>
+       <p>When I'm not working on commissions, you can probably find me gaming, watching anime, reading AO3… writing on AO3 too (side eye), experimenting with rigging, sleeping, or suffering through my dental course.</p>
+       <p>I'm always excited to work on new projects and meet fellow fans who love the same fandoms I do.</p>
+       <p class="text-sm italic text-gray-600 text-center mt-4">💖 Thank you so much for supporting my art journey! 💖</p>
+      </div>
+     </div>
+    </section><!-- Divider Line -->
+    <div class="w-full h-0.5 bg-gray-300 mb-12"></div><!-- Commission Section -->
+    <section id="commissionSection" class="mb-12">
+     <h2 class="title-font text-4xl mb-6 text-center">Commission Options</h2>
+     <div class="flex justify-center gap-4 mb-8 flex-wrap"><button onclick="showStyle('anime')" id="animeBtn" class="theme-bg text-black font-semibold py-3 px-6 rounded-lg text-lg hover:opacity-90 transition"> Anime Style </button> <button onclick="showStyle('chibi-typeA')" id="chibiTypeABtn" class="bg-gray-300 text-black font-semibold py-3 px-6 rounded-lg text-lg hover:opacity-90 transition"> Chibi </button>
+     </div><!-- Type B Chibi -->
+     <div id="chibiTypeASection" class="style-section chibi-section-bg p-6 rounded-lg">
+      <h3 class="title-font text-3xl mb-6 text-center">Chibi</h3><!-- Sub-options for Type A -->
+      <div class="flex justify-center gap-4 mb-8 flex-wrap"><button onclick="showSubStyle('standard')" id="standardBtn" class="theme-bg text-black font-semibold py-2 px-5 rounded-lg hover:opacity-90 transition"> Standard Chibi </button> <button onclick="showSubStyle('pngtuber')" id="pngtuberBtn" class="bg-gray-300 text-black font-semibold py-2 px-5 rounded-lg hover:opacity-90 transition"> PNGtuber Chibi </button> <button onclick="showSubStyle('ych')" id="ychBtn" class="bg-gray-300 text-black font-semibold py-2 px-5 rounded-lg hover:opacity-90 transition"> YCH Base Chibi </button> <button onclick="showSubStyle('emotes')" id="emotesSubBtn" class="bg-gray-300 text-black font-semibold py-2 px-5 rounded-lg hover:opacity-90 transition"> YCH Emotes Bundle </button>
+      </div><!-- Standard Chibi -->
+      <div id="standardSection" class="sub-style-section">
+       <h4 class="subtitle-font text-2xl mb-6 text-center font-semibold">Standard Chibi</h4>
+       <div class="flex justify-center gap-3 mb-8"><button onclick="selectVersion('chibi-typeA', 'lineart')" id="chibi-typeA-lineart-btn" class="theme-bg text-black font-semibold py-2 px-6 rounded-lg hover:opacity-90 transition"> Lineart </button> <button onclick="selectVersion('chibi-typeA', 'base')" id="chibi-typeA-base-btn" class="bg-gray-300 text-black font-semibold py-2 px-6 rounded-lg hover:opacity-90 transition"> Base Color </button> <button onclick="selectVersion('chibi-typeA', 'rendered')" id="chibi-typeA-rendered-btn" class="bg-gray-300 text-black font-semibold py-2 px-6 rounded-lg hover:opacity-90 transition"> Fully Rendered </button>
+       </div>
+       <div class="commission-display">
+        <div class="image-container">
+         <div class="character-images">
+          <div class="character-image lineart-img active cursor-pointer hover:shadow-xl transition-shadow duration-300" id="chibi-typeA-lineart" onclick="openCommissionImageLightbox(this, 'Standard Chibi - Lineart')"><img src="../../imgs/Chibi Style Sheets/Standard Chibi/CHIBI LINEART.png" alt="Chibi Lineart" class="w-full h-full object-cover">
+          </div>
+          <div class="character-image base-img dimmed cursor-pointer hover:shadow-xl transition-shadow duration-300" id="chibi-typeA-base" onclick="openCommissionImageLightbox(this, 'Standard Chibi - Base Color')"><img src="../../imgs/Chibi Style Sheets/Standard Chibi/CHIBI BASE COLOR.png" alt="Chibi Base Color" class="w-full h-full object-cover">
+          </div>
+          <div class="character-image rendered-img dimmed cursor-pointer hover:shadow-xl transition-shadow duration-300" id="chibi-typeA-rendered" onclick="openCommissionImageLightbox(this, 'Standard Chibi - Fully Rendered')"><img src="../../imgs/Chibi Style Sheets/Standard Chibi/CHIBI RENDERED.png" alt="Chibi Fully Rendered" class="w-full h-full object-cover">
+          </div>
+         </div>
+         <div class="price-labels">
+          <div class="price-label headshot-price" id="chibi-typeA-headshot">
+           Headshot: $5
+          </div>
+          <div class="price-label bust-price" id="chibi-typeA-bust">
+           Bust: $7
+          </div>
+          <div class="price-label halfbody-price" id="chibi-typeA-halfbody">
+           Half Body: $10
+          </div>
+          <div class="price-label fullbody-price" id="chibi-typeA-fullbody">
+           Whole Body: $12
+          </div>
+         </div>
+        </div>
+       </div>
+       <div class="mt-8 text-center subtitle-font text-sm">
+        <p class="font-semibold mb-2">Additional Options:</p>
+        <p>Backgrounds: Basic $5 | Detailed / Extra +$5–10</p>
+        <p>Additional Characters: +50% of base price per extra character (prices may vary based on character complexity)</p>
+       </div><!-- Quick Price Comparison Chart (Collapsible) -->
+       <div class="mt-8 max-w-5xl mx-auto"><button onclick="togglePriceGuide('chibi-typeA')" class="w-full theme-bg text-black font-bold py-3 px-6 rounded-lg text-xl hover:opacity-90 transition flex items-center justify-between"> <span class="subtitle-font">📊 Quick Price Comparison Guide</span> <span id="priceGuideArrow-chibi-typeA" class="text-2xl">▼</span> </button>
+        <div id="priceGuideContent-chibi-typeA" class="hidden bg-gradient-to-br from-yellow-50 to-white p-6 rounded-b-lg border-2 border-t-0 theme-border mt-0">
+         <p class="text-center text-sm text-gray-600 mb-4">💡 Compare all commission types and prices at a glance!</p>
+         <div class="overflow-x-auto">
+          <table class="w-full subtitle-font">
+           <thead>
+            <tr class="theme-bg">
+             <th class="py-3 px-4 text-left font-bold border-2 border-black">Type</th>
+             <th class="py-3 px-4 text-center font-bold border-2 border-black">Headshot</th>
+             <th class="py-3 px-4 text-center font-bold border-2 border-black">Bust</th>
+             <th class="py-3 px-4 text-center font-bold border-2 border-black">Half Body</th>
+             <th class="py-3 px-4 text-center font-bold border-2 border-black">Full Body</th>
+            </tr>
+           </thead>
+           <tbody>
+            <tr class="bg-white hover:bg-yellow-50 transition">
+             <td class="py-3 px-4 font-semibold border-2 border-gray-300">Chibi - Lineart</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$5</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$7</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$10</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$12</td>
+            </tr>
+            <tr class="bg-gray-50 hover:bg-yellow-50 transition">
+             <td class="py-3 px-4 font-semibold border-2 border-gray-300">Chibi - Base Color</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$10</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$12</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$15</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$20</td>
+            </tr>
+            <tr class="bg-white hover:bg-yellow-50 transition">
+             <td class="py-3 px-4 font-semibold border-2 border-gray-300">Chibi - Fully Rendered</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$15</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$18</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$22</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$25</td>
+            </tr>
+            <tr class="bg-gray-50 hover:bg-yellow-50 transition">
+             <td class="py-3 px-4 font-semibold border-2 border-gray-300">Anime - Lineart</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$8</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$10</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$12</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$15</td>
+            </tr>
+            <tr class="bg-white hover:bg-yellow-50 transition">
+             <td class="py-3 px-4 font-semibold border-2 border-gray-300">Anime - Base Color</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$12</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$15</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$18</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$25</td>
+            </tr>
+            <tr class="bg-gray-50 hover:bg-yellow-50 transition">
+             <td class="py-3 px-4 font-semibold border-2 border-gray-300">Anime - Fully Rendered</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$20</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$25</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$35</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$45</td>
+            </tr>
+            <tr class="bg-white hover:bg-yellow-50 transition">
+             <td class="py-3 px-4 font-semibold border-2 border-gray-300">YCH Base Chibi</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$12</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$15</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$17</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$20</td>
+            </tr>
+            <tr class="bg-gray-50 hover:bg-yellow-50 transition">
+             <td class="py-3 px-4 font-semibold border-2 border-gray-300">PNGtuber Base</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">—</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">—</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$22</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$25</td>
+            </tr>
+           </tbody>
+          </table>
+         </div>
+        </div>
+       </div>
+      </div><!-- YCH Base Chibi -->
+      <div id="ychSection" class="sub-style-section hidden">
+       <h4 class="subtitle-font text-2xl mb-6 text-center font-semibold">YCH Base Chibi</h4>
+       <p class="text-center subtitle-font mb-6 text-gray-600">Fully Rendered Only</p>
+       
+       <!-- Headshot Section -->
+       <div class="mb-10">
+        <h5 class="subtitle-font text-xl font-semibold text-center mb-4 theme-text">Headshot - $12</h5>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-6 max-w-6xl mx-auto">
+         <div class="flex flex-col items-center">
+          <div class="ych-base-placeholder w-64 h-80 flex items-end justify-center" id="headshot-pose1-base">
+            <img src="../../imgs/YCHFullbody1.png" alt="Pose 1 Base Image" class="w-full h-full object-cover">
+            </div>
+          <button class="ych-art-examples-btn" onclick="toggleYchExamples('headshot-pose1')">Art Examples</button>
+          <div class="ych-examples-section" id="headshot-pose1-examples">
+           <div class="ych-examples-grid">
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Headshot Pose 1 - Example 1')">
+             <span>Example 1</span>
+            </div>
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Headshot Pose 1 - Example 2')">
+             <span>Example 2</span>
+            </div>
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Headshot Pose 1 - Example 3')">
+             <span>Example 3</span>
+            </div>
+           </div>
+          </div>
+         </div>
+         <div class="flex flex-col items-center">
+          <div class="ych-base-placeholder w-64 h-80 flex items-end justify-center" id="headshot-pose2-base">
+           <span class="text-gray-400 text-sm font-semibold text-center pointer-events-none">Pose 2<br>(Base Image)</span>
+          </div>
+          <button class="ych-art-examples-btn" onclick="toggleYchExamples('headshot-pose2')">Art Examples</button>
+          <div class="ych-examples-section" id="headshot-pose2-examples">
+           <div class="ych-examples-grid">
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Headshot Pose 2 - Example 1')">
+             <span>Example 1</span>
+            </div>
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Headshot Pose 2 - Example 2')">
+             <span>Example 2</span>
+            </div>
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Headshot Pose 2 - Example 3')">
+             <span>Example 3</span>
+            </div>
+           </div>
+          </div>
+         </div>
+         <div class="flex flex-col items-center">
+          <div class="ych-base-placeholder w-64 h-80 flex items-end justify-center" id="headshot-pose3-base">
+           <span class="text-gray-400 text-sm font-semibold text-center pointer-events-none">Pose 3<br>(Base Image)</span>
+          </div>
+          <button class="ych-art-examples-btn" onclick="toggleYchExamples('headshot-pose3')">Art Examples</button>
+          <div class="ych-examples-section" id="headshot-pose3-examples">
+           <div class="ych-examples-grid">
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Headshot Pose 3 - Example 1')">
+             <span>Example 1</span>
+            </div>
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Headshot Pose 3 - Example 2')">
+             <span>Example 2</span>
+            </div>
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Headshot Pose 3 - Example 3')">
+             <span>Example 3</span>
+            </div>
+           </div>
+          </div>
+         </div>
+         <div class="flex flex-col items-center">
+          <div class="ych-base-placeholder w-64 h-80 flex items-end justify-center" id="headshot-pose4-base">
+           <span class="text-gray-400 text-sm font-semibold text-center pointer-events-none">Pose 4<br>(Base Image)</span>
+          </div>
+          <button class="ych-art-examples-btn" onclick="toggleYchExamples('headshot-pose4')">Art Examples</button>
+          <div class="ych-examples-section" id="headshot-pose4-examples">
+           <div class="ych-examples-grid">
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Headshot Pose 4 - Example 1')">
+             <span>Example 1</span>
+            </div>
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Headshot Pose 4 - Example 2')">
+             <span>Example 2</span>
+            </div>
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Headshot Pose 4 - Example 3')">
+             <span>Example 3</span>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+       </div>
+
+       <!-- Bust Section -->
+       <div class="mb-10">
+        <h5 class="subtitle-font text-xl font-semibold text-center mb-4 theme-text">Bust - $15</h5>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-6 max-w-6xl mx-auto">
+         <div class="flex flex-col items-center">
+          <div class="ych-base-placeholder w-64 h-80 flex items-end justify-center" id="bust-pose1-base">
+           <span class="text-gray-400 text-sm font-semibold text-center pointer-events-none">Pose 1<br>(Base Image)</span>
+          </div>
+          <button class="ych-art-examples-btn" onclick="toggleYchExamples('bust-pose1')">Art Examples</button>
+          <div class="ych-examples-section" id="bust-pose1-examples">
+           <div class="ych-examples-grid">
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Bust Pose 1 - Example 1')">
+             <span>Example 1</span>
+            </div>
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Bust Pose 1 - Example 2')">
+             <span>Example 2</span>
+            </div>
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Bust Pose 1 - Example 3')">
+             <span>Example 3</span>
+            </div>
+           </div>
+          </div>
+         </div>
+         <div class="flex flex-col items-center">
+          <div class="ych-base-placeholder w-64 h-80 flex items-end justify-center" id="bust-pose2-base">
+           <span class="text-gray-400 text-sm font-semibold text-center pointer-events-none">Pose 2<br>(Base Image)</span>
+          </div>
+          <button class="ych-art-examples-btn" onclick="toggleYchExamples('bust-pose2')">Art Examples</button>
+          <div class="ych-examples-section" id="bust-pose2-examples">
+           <div class="ych-examples-grid">
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Bust Pose 2 - Example 1')">
+             <span>Example 1</span>
+            </div>
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Bust Pose 2 - Example 2')">
+             <span>Example 2</span>
+            </div>
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Bust Pose 2 - Example 3')">
+             <span>Example 3</span>
+            </div>
+           </div>
+          </div>
+         </div>
+         <div class="flex flex-col items-center">
+          <div class="ych-base-placeholder w-64 h-80 flex items-end justify-center" id="bust-pose3-base">
+           <span class="text-gray-400 text-sm font-semibold text-center pointer-events-none">Pose 3<br>(Base Image)</span>
+          </div>
+          <button class="ych-art-examples-btn" onclick="toggleYchExamples('bust-pose3')">Art Examples</button>
+          <div class="ych-examples-section" id="bust-pose3-examples">
+           <div class="ych-examples-grid">
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Bust Pose 3 - Example 1')">
+             <span>Example 1</span>
+            </div>
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Bust Pose 3 - Example 2')">
+             <span>Example 2</span>
+            </div>
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Bust Pose 3 - Example 3')">
+             <span>Example 3</span>
+            </div>
+           </div>
+          </div>
+         </div>
+         <div class="flex flex-col items-center">
+          <div class="ych-base-placeholder w-64 h-80 flex items-end justify-center" id="bust-pose4-base">
+           <span class="text-gray-400 text-sm font-semibold text-center pointer-events-none">Pose 4<br>(Base Image)</span>
+          </div>
+          <button class="ych-art-examples-btn" onclick="toggleYchExamples('bust-pose4')">Art Examples</button>
+          <div class="ych-examples-section" id="bust-pose4-examples">
+           <div class="ych-examples-grid">
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Bust Pose 4 - Example 1')">
+             <span>Example 1</span>
+            </div>
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Bust Pose 4 - Example 2')">
+             <span>Example 2</span>
+            </div>
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Bust Pose 4 - Example 3')">
+             <span>Example 3</span>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+       </div>
+
+       <!-- Half Body Section -->
+       <div class="mb-10">
+        <h5 class="subtitle-font text-xl font-semibold text-center mb-4 theme-text">Half Body - $17</h5>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-6 max-w-6xl mx-auto">
+         <div class="flex flex-col items-center">
+          <div class="ych-base-placeholder w-64 h-80 flex items-end justify-center" id="halfbody-pose1-base">
+           <span class="text-gray-400 text-sm font-semibold text-center pointer-events-none">Pose 1<br>(Base Image)</span>
+          </div>
+          <button class="ych-art-examples-btn" onclick="toggleYchExamples('halfbody-pose1')">Art Examples</button>
+          <div class="ych-examples-section" id="halfbody-pose1-examples">
+           <div class="ych-examples-grid">
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Half Body Pose 1 - Example 1')">
+             <span>Example 1</span>
+            </div>
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Half Body Pose 1 - Example 2')">
+             <span>Example 2</span>
+            </div>
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Half Body Pose 1 - Example 3')">
+             <span>Example 3</span>
+            </div>
+           </div>
+          </div>
+         </div>
+         <div class="flex flex-col items-center">
+          <div class="ych-base-placeholder w-64 h-80 flex items-end justify-center" id="halfbody-pose2-base">
+           <span class="text-gray-400 text-sm font-semibold text-center pointer-events-none">Pose 2<br>(Base Image)</span>
+          </div>
+          <button class="ych-art-examples-btn" onclick="toggleYchExamples('halfbody-pose2')">Art Examples</button>
+          <div class="ych-examples-section" id="halfbody-pose2-examples">
+           <div class="ych-examples-grid">
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Half Body Pose 2 - Example 1')">
+             <span>Example 1</span>
+            </div>
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Half Body Pose 2 - Example 2')">
+             <span>Example 2</span>
+            </div>
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Half Body Pose 2 - Example 3')">
+             <span>Example 3</span>
+            </div>
+           </div>
+          </div>
+         </div>
+         <div class="flex flex-col items-center">
+          <div class="ych-base-placeholder w-64 h-80 flex items-end justify-center" id="halfbody-pose3-base">
+           <span class="text-gray-400 text-sm font-semibold text-center pointer-events-none">Pose 3<br>(Base Image)</span>
+          </div>
+          <button class="ych-art-examples-btn" onclick="toggleYchExamples('halfbody-pose3')">Art Examples</button>
+          <div class="ych-examples-section" id="halfbody-pose3-examples">
+           <div class="ych-examples-grid">
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Half Body Pose 3 - Example 1')">
+             <span>Example 1</span>
+            </div>
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Half Body Pose 3 - Example 2')">
+             <span>Example 2</span>
+            </div>
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Half Body Pose 3 - Example 3')">
+             <span>Example 3</span>
+            </div>
+           </div>
+          </div>
+         </div>
+         <div class="flex flex-col items-center">
+          <div class="ych-base-placeholder w-64 h-80 flex items-end justify-center" id="halfbody-pose4-base">
+           <span class="text-gray-400 text-sm font-semibold text-center pointer-events-none">Pose 4<br>(Base Image)</span>
+          </div>
+          <button class="ych-art-examples-btn" onclick="toggleYchExamples('halfbody-pose4')">Art Examples</button>
+          <div class="ych-examples-section" id="halfbody-pose4-examples">
+           <div class="ych-examples-grid">
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Half Body Pose 4 - Example 1')">
+             <span>Example 1</span>
+            </div>
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Half Body Pose 4 - Example 2')">
+             <span>Example 2</span>
+            </div>
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Half Body Pose 4 - Example 3')">
+             <span>Example 3</span>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+       </div>
+
+       <!-- Full Body Section -->
+       <div class="mb-10">
+        <h5 class="subtitle-font text-xl font-semibold text-center mb-4 theme-text">Full Body - $20</h5>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-6 max-w-6xl mx-auto">
+         <div class="flex flex-col items-center">
+          <div class="ych-base-placeholder w-64 h-80 flex items-end justify-center" id="fullbody-pose1-base">
+           <span class="text-gray-400 text-sm font-semibold text-center pointer-events-none">Pose 1<br>(Base Image)</span>
+          </div>
+          <button class="ych-art-examples-btn" onclick="toggleYchExamples('fullbody-pose1')">Art Examples</button>
+          <div class="ych-examples-section" id="fullbody-pose1-examples">
+           <div class="ych-examples-grid">
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Full Body Pose 1 - Example 1')">
+             <span>Example 1</span>
+            </div>
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Full Body Pose 1 - Example 2')">
+             <span>Example 2</span>
+            </div>
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Full Body Pose 1 - Example 3')">
+             <span>Example 3</span>
+            </div>
+           </div>
+          </div>
+         </div>
+         <div class="flex flex-col items-center">
+          <div class="ych-base-placeholder w-64 h-80 flex items-end justify-center" id="fullbody-pose2-base">
+           <span class="text-gray-400 text-sm font-semibold text-center pointer-events-none">Pose 2<br>(Base Image)</span>
+          </div>
+          <button class="ych-art-examples-btn" onclick="toggleYchExamples('fullbody-pose2')">Art Examples</button>
+          <div class="ych-examples-section" id="fullbody-pose2-examples">
+           <div class="ych-examples-grid">
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Full Body Pose 2 - Example 1')">
+             <span>Example 1</span>
+            </div>
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Full Body Pose 2 - Example 2')">
+             <span>Example 2</span>
+            </div>
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Full Body Pose 2 - Example 3')">
+             <span>Example 3</span>
+            </div>
+           </div>
+          </div>
+         </div>
+         <div class="flex flex-col items-center">
+          <div class="ych-base-placeholder w-64 h-80 flex items-end justify-center" id="fullbody-pose3-base">
+           <span class="text-gray-400 text-sm font-semibold text-center pointer-events-none">Pose 3<br>(Base Image)</span>
+          </div>
+          <button class="ych-art-examples-btn" onclick="toggleYchExamples('fullbody-pose3')">Art Examples</button>
+          <div class="ych-examples-section" id="fullbody-pose3-examples">
+           <div class="ych-examples-grid">
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Full Body Pose 3 - Example 1')">
+             <span>Example 1</span>
+            </div>
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Full Body Pose 3 - Example 2')">
+             <span>Example 2</span>
+            </div>
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Full Body Pose 3 - Example 3')">
+             <span>Example 3</span>
+            </div>
+           </div>
+          </div>
+         </div>
+         <div class="flex flex-col items-center">
+          <div class="ych-base-placeholder w-64 h-80 flex items-end justify-center" id="fullbody-pose4-base">
+           <span class="text-gray-400 text-sm font-semibold text-center pointer-events-none">Pose 4<br>(Base Image)</span>
+          </div>
+          <button class="ych-art-examples-btn" onclick="toggleYchExamples('fullbody-pose4')">Art Examples</button>
+          <div class="ych-examples-section" id="fullbody-pose4-examples">
+           <div class="ych-examples-grid">
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Full Body Pose 4 - Example 1')">
+             <span>Example 1</span>
+            </div>
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Full Body Pose 4 - Example 2')">
+             <span>Example 2</span>
+            </div>
+            <div class="ych-example-thumbnail" onclick="enlargeYchExample('Full Body Pose 4 - Example 3')">
+             <span>Example 3</span>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+       </div>
+
+       <div class="mt-8 text-center subtitle-font text-sm">
+        <p class="font-semibold mb-2">Additional Options:</p>
+        <p>Backgrounds: Basic $5 | Detailed / Extra +$5–10</p>
+        <p>Additional Characters: +50% of base price per extra character (prices may vary based on character complexity)</p>
+       </div><!-- Quick Price Comparison Chart (Collapsible) -->
+       <div class="mt-8 max-w-5xl mx-auto"><button onclick="togglePriceGuide('chibi-typeA')" class="w-full theme-bg text-black font-bold py-3 px-6 rounded-lg text-xl hover:opacity-90 transition flex items-center justify-between"> <span class="subtitle-font">📊 Quick Price Comparison Guide</span> <span id="priceGuideArrow-chibi-typeA" class="text-2xl">▼</span> </button>
+        <div id="priceGuideContent-chibi-typeA" class="hidden bg-gradient-to-br from-yellow-50 to-white p-6 rounded-b-lg border-2 border-t-0 theme-border mt-0">
+         <p class="text-center text-sm text-gray-600 mb-4">💡 Compare all commission types and prices at a glance!</p>
+         <div class="overflow-x-auto">
+          <table class="w-full subtitle-font">
+           <thead>
+            <tr class="theme-bg">
+             <th class="py-3 px-4 text-left font-bold border-2 border-black">Type</th>
+             <th class="py-3 px-4 text-center font-bold border-2 border-black">Headshot</th>
+             <th class="py-3 px-4 text-center font-bold border-2 border-black">Bust</th>
+             <th class="py-3 px-4 text-center font-bold border-2 border-black">Half Body</th>
+             <th class="py-3 px-4 text-center font-bold border-2 border-black">Full Body</th>
+            </tr>
+           </thead>
+           <tbody>
+            <tr class="bg-white hover:bg-yellow-50 transition">
+             <td class="py-3 px-4 font-semibold border-2 border-gray-300">Chibi - Lineart</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$5</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$7</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$10</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$12</td>
+            </tr>
+            <tr class="bg-gray-50 hover:bg-yellow-50 transition">
+             <td class="py-3 px-4 font-semibold border-2 border-gray-300">Chibi - Base Color</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$10</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$12</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$15</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$20</td>
+            </tr>
+            <tr class="bg-white hover:bg-yellow-50 transition">
+             <td class="py-3 px-4 font-semibold border-2 border-gray-300">Chibi - Fully Rendered</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$15</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$18</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$22</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$25</td>
+            </tr>
+            <tr class="bg-gray-50 hover:bg-yellow-50 transition">
+             <td class="py-3 px-4 font-semibold border-2 border-gray-300">Anime - Lineart</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$8</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$10</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$12</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$15</td>
+            </tr>
+            <tr class="bg-white hover:bg-yellow-50 transition">
+             <td class="py-3 px-4 font-semibold border-2 border-gray-300">Anime - Base Color</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$12</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$15</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$18</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$25</td>
+            </tr>
+            <tr class="bg-gray-50 hover:bg-yellow-50 transition">
+             <td class="py-3 px-4 font-semibold border-2 border-gray-300">Anime - Fully Rendered</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$20</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$25</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$35</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$45</td>
+            </tr>
+            <tr class="bg-white hover:bg-yellow-50 transition">
+             <td class="py-3 px-4 font-semibold border-2 border-gray-300">YCH Base Chibi</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$12</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$15</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$17</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$20</td>
+            </tr>
+            <tr class="bg-gray-50 hover:bg-yellow-50 transition">
+             <td class="py-3 px-4 font-semibold border-2 border-gray-300">PNGtuber Base</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">—</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">—</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$22</td>
+             <td class="py-3 px-4 text-center border-2 border-gray-300">$25</td>
+            </tr>
+           </tbody>
+          </table>
+         </div>
+        </div>
+       </div>
+      </div><!-- PNGtuber Chibi -->
+      <div id="pngtuberSection" class="sub-style-section hidden">
+       <h4 class="subtitle-font text-2xl mb-6 text-center font-semibold">PNGtuber Chibi</h4><!-- Base Artwork Price -->
+       <div class="max-w-3xl mx-auto mb-8 bg-gray-50 p-6 rounded-lg border-2 theme-border">
+        <h5 class="subtitle-font text-xl font-bold text-center mb-4 theme-text">Base Artwork Price</h5>
+        <div class="flex gap-4 justify-center">
+         <div class="bg-white p-4 rounded-lg border-2 border-gray-300 flex-1 text-center">
+          <p class="font-semibold text-lg">Half Body</p>
+          <p class="theme-text font-bold text-2xl">$22</p>
+         </div>
+         <div class="bg-white p-4 rounded-lg border-2 border-gray-300 flex-1 text-center">
+          <p class="font-semibold text-lg">Whole Body</p>
+          <p class="theme-text font-bold text-2xl">$25</p>
+         </div>
+        </div>
+        <p class="text-sm text-gray-600 text-center mt-3">Fully Rendered Chibi - Choose your base!</p>
+       </div>
+       <div class="max-w-5xl mx-auto"><!-- Standard PNGtuber Action -->
+        <div class="mb-8">
+         <h5 class="subtitle-font text-xl font-bold text-center mb-6 theme-text">Standard PNGtuber Action (Required)</h5>
+         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6"><!-- Eyes Open - Mouth Open -->
+          <div class="bg-white p-4 rounded-lg border-2 theme-border cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openCommissionImageLightbox(this, 'PNGtuber - Eyes Open, Mouth Open')">
+           <div class="aspect-square bg-gray-200 rounded-lg border-2 border-gray-400 flex items-center justify-center mb-3"><span class="text-gray-500 text-center text-sm p-2">Your Image Here<br><span class="text-xs">(Click to enlarge)</span></span>
+           </div>
+           <p class="subtitle-font text-center font-semibold text-sm">Eyes Open<br>
+            Mouth Open</p>
+          </div><!-- Eyes Closed - Mouth Closed -->
+          <div class="bg-white p-4 rounded-lg border-2 theme-border cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openCommissionImageLightbox(this, 'PNGtuber - Eyes Closed, Mouth Closed')">
+           <div class="aspect-square bg-gray-200 rounded-lg border-2 border-gray-400 flex items-center justify-center mb-3"><span class="text-gray-500 text-center text-sm p-2">Your Image Here<br><span class="text-xs">(Click to enlarge)</span></span>
+           </div>
+           <p class="subtitle-font text-center font-semibold text-sm">Eyes Closed<br>
+            Mouth Closed</p>
+          </div><!-- Eyes Open - Mouth Closed -->
+          <div class="bg-white p-4 rounded-lg border-2 theme-border cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openCommissionImageLightbox(this, 'PNGtuber - Eyes Open, Mouth Closed')">
+           <div class="aspect-square bg-gray-200 rounded-lg border-2 border-gray-400 flex items-center justify-center mb-3"><span class="text-gray-500 text-center text-sm p-2">Your Image Here<br><span class="text-xs">(Click to enlarge)</span></span>
+           </div>
+           <p class="subtitle-font text-center font-semibold text-sm">Eyes Open<br>
+            Mouth Closed</p>
+          </div><!-- Eyes Closed - Mouth Open -->
+          <div class="bg-white p-4 rounded-lg border-2 theme-border cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openCommissionImageLightbox(this, 'PNGtuber - Eyes Closed, Mouth Open')">
+           <div class="aspect-square bg-gray-200 rounded-lg border-2 border-gray-400 flex items-center justify-center mb-3"><span class="text-gray-500 text-center text-sm p-2">Your Image Here<br><span class="text-xs">(Click to enlarge)</span></span>
+           </div>
+           <p class="subtitle-font text-center font-semibold text-sm">Eyes Closed<br>
+            Mouth Open</p>
+          </div>
+         </div><!-- Pricing for Required Set -->
+         <div class="bg-white p-5 rounded-lg border-2 theme-border max-w-xl mx-auto">
+          <div class="text-center">
+           <p class="font-semibold text-lg mb-2">PNGtuber Main Expression Set</p>
+           <p class="theme-text font-bold text-3xl mb-2">+$15</p>
+           <p class="text-sm text-gray-600">Includes all 4 expressions above • Transparent PNG files • Aligned for PNGtuber use</p>
+          </div>
+         </div>
+        </div><!-- Divider -->
+        <div class="w-full h-0.5 bg-gray-300 mb-8"></div><!-- Additional Options -->
+        <div class="mb-8">
+         <h5 class="subtitle-font text-xl font-bold text-center mb-6 theme-text">Additional Expressions (Optional)</h5>
+         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-6"><!-- Amazed Idle -->
+          <div class="bg-white p-4 rounded-lg border-2 border-gray-300 cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openCommissionImageLightbox(this, 'PNGtuber - Amazed Idle')">
+           <div class="aspect-square bg-gray-200 rounded-lg border-2 border-gray-400 flex items-center justify-center mb-3"><span class="text-gray-500 text-center text-sm p-2">Your Image Here<br><span class="text-xs">(Click to enlarge)</span></span>
+           </div>
+           <p class="subtitle-font text-center font-semibold text-sm">Amazed Idle</p>
+          </div><!-- Angry -->
+          <div class="bg-white p-4 rounded-lg border-2 border-gray-300 cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openCommissionImageLightbox(this, 'PNGtuber - Angry')">
+           <div class="aspect-square bg-gray-200 rounded-lg border-2 border-gray-400 flex items-center justify-center mb-3"><span class="text-gray-500 text-center text-sm p-2">Your Image Here<br><span class="text-xs">(Click to enlarge)</span></span>
+           </div>
+           <p class="subtitle-font text-center font-semibold text-sm">Angry</p>
+          </div><!-- Angry Speak -->
+          <div class="bg-white p-4 rounded-lg border-2 border-gray-300 cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openCommissionImageLightbox(this, 'PNGtuber - Angry Speak')">
+           <div class="aspect-square bg-gray-200 rounded-lg border-2 border-gray-400 flex items-center justify-center mb-3"><span class="text-gray-500 text-center text-sm p-2">Your Image Here<br><span class="text-xs">(Click to enlarge)</span></span>
+           </div>
+           <p class="subtitle-font text-center font-semibold text-sm">Angry Speak</p>
+          </div><!-- Heart Eyes -->
+          <div class="bg-white p-4 rounded-lg border-2 border-gray-300 cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openCommissionImageLightbox(this, 'PNGtuber - Heart Eyes')">
+           <div class="aspect-square bg-gray-200 rounded-lg border-2 border-gray-400 flex items-center justify-center mb-3"><span class="text-gray-500 text-center text-sm p-2">Your Image Here<br><span class="text-xs">(Click to enlarge)</span></span>
+           </div>
+           <p class="subtitle-font text-center font-semibold text-sm">Heart Eyes</p>
+          </div><!-- Sad -->
+          <div class="bg-white p-4 rounded-lg border-2 border-gray-300 cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openCommissionImageLightbox(this, 'PNGtuber - Sad')">
+           <div class="aspect-square bg-gray-200 rounded-lg border-2 border-gray-400 flex items-center justify-center mb-3"><span class="text-gray-500 text-center text-sm p-2">Your Image Here<br><span class="text-xs">(Click to enlarge)</span></span>
+           </div>
+           <p class="subtitle-font text-center font-semibold text-sm">Sad</p>
+          </div><!-- Happy -->
+          <div class="bg-white p-4 rounded-lg border-2 border-gray-300 cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openCommissionImageLightbox(this, 'PNGtuber - Happy')">
+           <div class="aspect-square bg-gray-200 rounded-lg border-2 border-gray-400 flex items-center justify-center mb-3"><span class="text-gray-500 text-center text-sm p-2">Your Image Here<br><span class="text-xs">(Click to enlarge)</span></span>
+           </div>
+           <p class="subtitle-font text-center font-semibold text-sm">Happy</p>
+          </div><!-- Blushing -->
+          <div class="bg-white p-4 rounded-lg border-2 border-gray-300 cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openCommissionImageLightbox(this, 'PNGtuber - Blushing')">
+           <div class="aspect-square bg-gray-200 rounded-lg border-2 border-gray-400 flex items-center justify-center mb-3"><span class="text-gray-500 text-center text-sm p-2">Your Image Here<br><span class="text-xs">(Click to enlarge)</span></span>
+           </div>
+           <p class="subtitle-font text-center font-semibold text-sm">Blushing</p>
+          </div>
+         </div><!-- Pricing for Additional Expressions -->
+         <div class="bg-white p-5 rounded-lg border-2 border-gray-300 max-w-xl mx-auto">
+          <div class="text-center">
+           <p class="font-semibold text-lg mb-2">Additional Expressions</p>
+           <p class="theme-text font-bold text-3xl mb-2">+$5 each</p>
+           <p class="text-sm text-gray-600">Choose any expressions above or request custom ones • Same quality &amp; transparency as main set</p>
+          </div>
+         </div>
+        </div><!-- Important Notes -->
+        <div class="bg-yellow-50 p-5 rounded-lg border-2 border-yellow-300 max-w-3xl mx-auto">
+         <p class="text-sm font-semibold mb-2">💡 Important Notes:</p>
+         <ul class="text-sm space-y-1">
+          <li>• All expressions delivered as separate PNG files with transparent backgrounds</li>
+          <li>• Eye and mouth positions aligned perfectly for PNGtuber software</li>
+          <li>• Minor adjustments allowed within revision limit</li>
+          <li>• Custom expression requests welcome!</li>
+         </ul>
+        </div>
+       </div>
+      </div><!-- YCH Emotes Bundle -->
+      <div id="emotesSubSection" class="sub-style-section hidden">
+       <h4 class="subtitle-font text-2xl mb-6 text-center font-semibold">YCH Emotes Bundle</h4>
+       <div class="max-w-2xl mx-auto bg-gray-50 p-8 rounded-lg border-2 theme-border">
+        <div class="space-y-4 subtitle-font text-lg">
+         <div class="flex justify-between items-center p-4 bg-white rounded-lg border-2 border-gray-300"><span class="font-semibold">1 Emote</span> <span class="theme-text font-bold text-xl">$5</span>
+         </div>
+         <div class="flex justify-between items-center p-4 bg-white rounded-lg border-2 theme-border"><span class="font-semibold">5 Emotes of Your Choice</span> <span class="theme-text font-bold text-xl">$20</span>
+         </div>
+         <div class="flex justify-between items-center p-4 bg-white rounded-lg border-2 theme-border"><span class="font-semibold">10 Emotes of Your Choice</span> <span class="theme-text font-bold text-xl">$35</span>
+         </div>
+         <div class="flex justify-between items-center p-4 bg-white rounded-lg border-2 border-gray-300"><span class="font-semibold">Animated Emotes</span> <span class="theme-text font-bold text-xl">+$10</span>
+         </div>
+        </div>
+        <div class="mt-6 grid grid-cols-5 gap-3">
+         <div class="aspect-square bg-gray-200 rounded-lg border-2 border-gray-400 flex items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openCommissionImageLightbox(this, 'YCH Emote 1')"><span class="text-gray-500 text-center text-xs p-1">Your Emote Image Here<br><span class="text-[10px]">(Click to enlarge)</span></span>
+         </div>
+         <div class="aspect-square bg-gray-200 rounded-lg border-2 border-gray-400 flex items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openCommissionImageLightbox(this, 'YCH Emote 2')"><span class="text-gray-500 text-center text-xs p-1">Your Emote Image Here<br><span class="text-[10px]">(Click to enlarge)</span></span>
+         </div>
+         <div class="aspect-square bg-gray-200 rounded-lg border-2 border-gray-400 flex items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openCommissionImageLightbox(this, 'YCH Emote 3')"><span class="text-gray-500 text-center text-xs p-1">Your Emote Image Here<br><span class="text-[10px]">(Click to enlarge)</span></span>
+         </div>
+         <div class="aspect-square bg-gray-200 rounded-lg border-2 border-gray-400 flex items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openCommissionImageLightbox(this, 'YCH Emote 4')"><span class="text-gray-500 text-center text-xs p-1">Your Emote Image Here<br><span class="text-[10px]">(Click to enlarge)</span></span>
+         </div>
+         <div class="aspect-square bg-gray-200 rounded-lg border-2 border-gray-400 flex items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openCommissionImageLightbox(this, 'YCH Emote 5')"><span class="text-gray-500 text-center text-xs p-1">Your Emote Image Here<br><span class="text-[10px]">(Click to enlarge)</span></span>
+         </div>
+         <div class="aspect-square bg-gray-200 rounded-lg border-2 border-gray-400 flex items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openCommissionImageLightbox(this, 'YCH Emote 6')"><span class="text-gray-500 text-center text-xs p-1">Your Emote Image Here<br><span class="text-[10px]">(Click to enlarge)</span></span>
+         </div>
+         <div class="aspect-square bg-gray-200 rounded-lg border-2 border-gray-400 flex items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openCommissionImageLightbox(this, 'YCH Emote 7')"><span class="text-gray-500 text-center text-xs p-1">Your Emote Image Here<br><span class="text-[10px]">(Click to enlarge)</span></span>
+         </div>
+         <div class="aspect-square bg-gray-200 rounded-lg border-2 border-gray-400 flex items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openCommissionImageLightbox(this, 'YCH Emote 8')"><span class="text-gray-500 text-center text-xs p-1">Your Emote Image Here<br><span class="text-[10px]">(Click to enlarge)</span></span>
+         </div>
+         <div class="aspect-square bg-gray-200 rounded-lg border-2 border-gray-400 flex items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openCommissionImageLightbox(this, 'YCH Emote 9')"><span class="text-gray-500 text-center text-xs p-1">Your Emote Image Here<br><span class="text-[10px]">(Click to enlarge)</span></span>
+         </div>
+         <div class="aspect-square bg-gray-200 rounded-lg border-2 border-gray-400 flex items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openCommissionImageLightbox(this, 'YCH Emote 10')"><span class="text-gray-500 text-center text-xs p-1">Your Emote Image Here<br><span class="text-[10px]">(Click to enlarge)</span></span>
+         </div>
+         <div class="aspect-square bg-gray-200 rounded-lg border-2 border-gray-400 flex items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openCommissionImageLightbox(this, 'YCH Emote 11')"><span class="text-gray-500 text-center text-xs p-1">Your Emote Image Here<br><span class="text-[10px]">(Click to enlarge)</span></span>
+         </div>
+         <div class="aspect-square bg-gray-200 rounded-lg border-2 border-gray-400 flex items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openCommissionImageLightbox(this, 'YCH Emote 12')"><span class="text-gray-500 text-center text-xs p-1">Your Emote Image Here<br><span class="text-[10px]">(Click to enlarge)</span></span>
+         </div>
+         <div class="aspect-square bg-gray-200 rounded-lg border-2 border-gray-400 flex items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openCommissionImageLightbox(this, 'YCH Emote 13')"><span class="text-gray-500 text-center text-xs p-1">Your Emote Image Here<br><span class="text-[10px]">(Click to enlarge)</span></span>
+         </div>
+         <div class="aspect-square bg-gray-200 rounded-lg border-2 border-gray-400 flex items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openCommissionImageLightbox(this, 'YCH Emote 14')"><span class="text-gray-500 text-center text-xs p-1">Your Emote Image Here<br><span class="text-[10px]">(Click to enlarge)</span></span>
+         </div>
+         <div class="aspect-square bg-gray-200 rounded-lg border-2 border-gray-400 flex items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openCommissionImageLightbox(this, 'YCH Emote 15')"><span class="text-gray-500 text-center text-xs p-1">Your Emote Image Here<br><span class="text-[10px]">(Click to enlarge)</span></span>
+         </div>
+        </div>
+       </div>
+      </div>
+     </div><!-- Anime Style -->
+     <div id="animeSection" class="style-section hidden anime-section-bg p-6 rounded-lg">
+      <h3 class="title-font text-3xl mb-6 text-center">Anime Style</h3>
+      <div class="flex justify-center gap-3 mb-8"><button onclick="selectVersion('anime', 'lineart')" id="anime-lineart-btn" class="theme-bg text-black font-semibold py-2 px-6 rounded-lg hover:opacity-90 transition"> Lineart </button> <button onclick="selectVersion('anime', 'base')" id="anime-base-btn" class="bg-gray-300 text-black font-semibold py-2 px-6 rounded-lg hover:opacity-90 transition"> Base Color </button> <button onclick="selectVersion('anime', 'rendered')" id="anime-rendered-btn" class="bg-gray-300 text-black font-semibold py-2 px-6 rounded-lg hover:opacity-90 transition"> Fully Rendered </button>
+      </div>
+      <div class="commission-display">
+       <div class="image-container">
+        <div class="character-images">
+         <div class="character-image lineart-img active cursor-pointer hover:shadow-xl transition-shadow duration-300" id="anime-lineart" onclick="openCommissionImageLightbox(this, 'Anime Style - Lineart')"><img src="../../imgs/anime style sheets/LINEART ANIME.png" alt="Anime Lineart" class="w-full h-full object-cover">
+         </div>
+         <div class="character-image base-img dimmed cursor-pointer hover:shadow-xl transition-shadow duration-300" id="anime-base" onclick="openCommissionImageLightbox(this, 'Anime Style - Base Color')"><img src="../../imgs/anime style sheets/BASE ART ANIME.png" alt="Anime Base Color" class="w-full h-full object-cover">
+         </div>
+         <div class="character-image rendered-img dimmed cursor-pointer hover:shadow-xl transition-shadow duration-300" id="anime-rendered" onclick="openCommissionImageLightbox(this, 'Anime Style - Fully Rendered')"><img src="../../imgs/anime style sheets/RENDERED ANIME.png" alt="Anime Fully Rendered" class="w-full h-full object-cover">
+         </div>
+        </div>
+        <div class="price-labels">
+         <div class="price-label headshot-price" id="anime-headshot">
+          Headshot: $8
+         </div>
+         <div class="price-label bust-price" id="anime-bust">
+          Bust: $10
+         </div>
+         <div class="price-label halfbody-price" id="anime-halfbody">
+          Half Body: $12
+         </div>
+         <div class="price-label fullbody-price" id="anime-fullbody">
+          Whole Body: $15
+         </div>
+        </div>
+       </div>
+      </div>
+      <div class="mt-8 text-center subtitle-font text-sm">
+       <p class="font-semibold mb-2">Additional Options:</p>
+       <p>Backgrounds: Basic $5 | Detailed / Extra +$5–10</p>
+       <p>Additional Characters: +50% of base price per extra character (prices may vary based on character complexity)</p>
+      </div><!-- Quick Price Comparison Chart (Collapsible) -->
+      <div class="mt-8 max-w-5xl mx-auto"><button onclick="togglePriceGuide('anime')" class="w-full theme-bg text-black font-bold py-3 px-6 rounded-lg text-xl hover:opacity-90 transition flex items-center justify-between"> <span class="subtitle-font">📊 Quick Price Comparison Guide</span> <span id="priceGuideArrow-anime" class="text-2xl">▼</span> </button>
+       <div id="priceGuideContent-anime" class="hidden bg-gradient-to-br from-yellow-50 to-white p-6 rounded-b-lg border-2 border-t-0 theme-border mt-0">
+        <p class="text-center text-sm text-gray-600 mb-4">💡 Compare all commission types and prices at a glance!</p>
+        <div class="overflow-x-auto">
+         <table class="w-full subtitle-font">
+          <thead>
+           <tr class="theme-bg">
+            <th class="py-3 px-4 text-left font-bold border-2 border-black">Type</th>
+            <th class="py-3 px-4 text-center font-bold border-2 border-black">Headshot</th>
+            <th class="py-3 px-4 text-center font-bold border-2 border-black">Bust</th>
+            <th class="py-3 px-4 text-center font-bold border-2 border-black">Half Body</th>
+            <th class="py-3 px-4 text-center font-bold border-2 border-black">Full Body</th>
+           </tr>
+          </thead>
+          <tbody>
+           <tr class="bg-white hover:bg-yellow-50 transition">
+            <td class="py-3 px-4 font-semibold border-2 border-gray-300">Chibi - Lineart</td>
+            <td class="py-3 px-4 text-center border-2 border-gray-300">$5</td>
+            <td class="py-3 px-4 text-center border-2 border-gray-300">$7</td>
+            <td class="py-3 px-4 text-center border-2 border-gray-300">$10</td>
+            <td class="py-3 px-4 text-center border-2 border-gray-300">$12</td>
+           </tr>
+           <tr class="bg-gray-50 hover:bg-yellow-50 transition">
+            <td class="py-3 px-4 font-semibold border-2 border-gray-300">Chibi - Base Color</td>
+            <td class="py-3 px-4 text-center border-2 border-gray-300">$10</td>
+            <td class="py-3 px-4 text-center border-2 border-gray-300">$12</td>
+            <td class="py-3 px-4 text-center border-2 border-gray-300">$15</td>
+            <td class="py-3 px-4 text-center border-2 border-gray-300">$20</td>
+           </tr>
+           <tr class="bg-white hover:bg-yellow-50 transition">
+            <td class="py-3 px-4 font-semibold border-2 border-gray-300">Chibi - Fully Rendered</td>
+            <td class="py-3 px-4 text-center border-2 border-gray-300">$15</td>
+            <td class="py-3 px-4 text-center border-2 border-gray-300">$18</td>
+            <td class="py-3 px-4 text-center border-2 border-gray-300">$22</td>
+            <td class="py-3 px-4 text-center border-2 border-gray-300">$25</td>
+           </tr>
+           <tr class="bg-gray-50 hover:bg-yellow-50 transition">
+            <td class="py-3 px-4 font-semibold border-2 border-gray-300">Anime - Lineart</td>
+            <td class="py-3 px-4 text-center border-2 border-gray-300">$8</td>
+            <td class="py-3 px-4 text-center border-2 border-gray-300">$10</td>
+            <td class="py-3 px-4 text-center border-2 border-gray-300">$12</td>
+            <td class="py-3 px-4 text-center border-2 border-gray-300">$15</td>
+           </tr>
+           <tr class="bg-white hover:bg-yellow-50 transition">
+            <td class="py-3 px-4 font-semibold border-2 border-gray-300">Anime - Base Color</td>
+            <td class="py-3 px-4 text-center border-2 border-gray-300">$12</td>
+            <td class="py-3 px-4 text-center border-2 border-gray-300">$15</td>
+            <td class="py-3 px-4 text-center border-2 border-gray-300">$18</td>
+            <td class="py-3 px-4 text-center border-2 border-gray-300">$25</td>
+           </tr>
+           <tr class="bg-gray-50 hover:bg-yellow-50 transition">
+            <td class="py-3 px-4 font-semibold border-2 border-gray-300">Anime - Fully Rendered</td>
+            <td class="py-3 px-4 text-center border-2 border-gray-300">$20</td>
+            <td class="py-3 px-4 text-center border-2 border-gray-300">$25</td>
+            <td class="py-3 px-4 text-center border-2 border-gray-300">$35</td>
+            <td class="py-3 px-4 text-center border-2 border-gray-300">$45</td>
+           </tr>
+           <tr class="bg-white hover:bg-yellow-50 transition">
+            <td class="py-3 px-4 font-semibold border-2 border-gray-300">YCH Base Chibi</td>
+            <td class="py-3 px-4 text-center border-2 border-gray-300">$12</td>
+            <td class="py-3 px-4 text-center border-2 border-gray-300">$15</td>
+            <td class="py-3 px-4 text-center border-2 border-gray-300">$17</td>
+            <td class="py-3 px-4 text-center border-2 border-gray-300">$20</td>
+           </tr>
+           <tr class="bg-gray-50 hover:bg-yellow-50 transition">
+            <td class="py-3 px-4 font-semibold border-2 border-gray-300">PNGtuber Base</td>
+            <td class="py-3 px-4 text-center border-2 border-gray-300">—</td>
+            <td class="py-3 px-4 text-center border-2 border-gray-300">—</td>
+            <td class="py-3 px-4 text-center border-2 border-gray-300">$22</td>
+            <td class="py-3 px-4 text-center border-2 border-gray-300">$25</td>
+           </tr>
+          </tbody>
+         </table>
+        </div>
+       </div>
+      </div>
+     </div><!-- Commission Process Timeline - AT THE BOTTOM -->
+     <div class="mt-10 max-w-5xl mx-auto bg-gradient-to-br from-yellow-50 to-white p-8 rounded-lg border-2 theme-border">
+      <h4 class="subtitle-font text-2xl font-bold text-center mb-6 theme-text">📋 Commission Process Timeline</h4>
+      <div class="flex flex-col md:flex-row items-center justify-between gap-3"><!-- Step 1 -->
+       <div class="flex-1 text-center min-w-0">
+        <div class="w-12 h-12 mx-auto bg-white border-3 theme-border rounded-full flex items-center justify-center text-xl mb-2">
+         📝
+        </div>
+        <h5 class="font-bold text-sm mb-1">Order</h5>
+        <p class="text-xs text-gray-600">Contact &amp; fill form</p>
+       </div>
+       <div class="hidden md:block text-2xl theme-text flex-shrink-0">
+        →
+       </div><!-- Step 2 -->
+       <div class="flex-1 text-center min-w-0">
+        <div class="w-12 h-12 mx-auto bg-white border-3 theme-border rounded-full flex items-center justify-center text-xl mb-2">
+         ✏️
+        </div>
+        <h5 class="font-bold text-sm mb-1">Sketch</h5>
+        <p class="text-xs text-gray-600">Initial sketch</p>
+       </div>
+       <div class="hidden md:block text-2xl theme-text flex-shrink-0">
+        →
+       </div><!-- Step 3 -->
+       <div class="flex-1 text-center min-w-0">
+        <div class="w-12 h-12 mx-auto bg-white border-3 theme-border rounded-full flex items-center justify-center text-xl mb-2">
+         👍
+        </div>
+        <h5 class="font-bold text-sm mb-1">Approval</h5>
+        <p class="text-xs text-gray-600">You approve</p>
+       </div>
+       <div class="hidden md:block text-2xl theme-text flex-shrink-0">
+        →
+       </div><!-- Step 4 -->
+       <div class="flex-1 text-center min-w-0">
+        <div class="w-12 h-12 mx-auto bg-white border-3 theme-border rounded-full flex items-center justify-center text-xl mb-2">
+         💵
+        </div>
+        <h5 class="font-bold text-sm mb-1">50% Payment</h5>
+        <p class="text-xs text-gray-600">Pay deposit</p>
+       </div>
+       <div class="hidden md:block text-2xl theme-text flex-shrink-0">
+        →
+       </div><!-- Step 5 -->
+       <div class="flex-1 text-center min-w-0">
+        <div class="w-12 h-12 mx-auto bg-white border-3 theme-border rounded-full flex items-center justify-center text-xl mb-2">
+         🎨
+        </div>
+        <h5 class="font-bold text-sm mb-1">Progress</h5>
+        <p class="text-xs text-gray-600">Colors &amp; render</p>
+       </div>
+       <div class="hidden md:block text-2xl theme-text flex-shrink-0">
+        →
+       </div><!-- Step 6 -->
+       <div class="flex-1 text-center min-w-0">
+        <div class="w-12 h-12 mx-auto bg-white border-3 theme-border rounded-full flex items-center justify-center text-xl mb-2">
+         ⭐
+        </div>
+        <h5 class="font-bold text-sm mb-1">Final</h5>
+        <p class="text-xs text-gray-600">Art complete!</p>
+       </div>
+       <div class="hidden md:block text-2xl theme-text flex-shrink-0">
+        →
+       </div><!-- Step 7 -->
+       <div class="flex-1 text-center min-w-0">
+        <div class="w-12 h-12 mx-auto bg-white border-3 theme-border rounded-full flex items-center justify-center text-xl mb-2">
+         💳
+        </div>
+        <h5 class="font-bold text-sm mb-1">Final Payment</h5>
+        <p class="text-xs text-gray-600">Pay remaining</p>
+       </div>
+       <div class="hidden md:block text-2xl theme-text flex-shrink-0">
+        →
+       </div><!-- Step 8 -->
+       <div class="flex-1 text-center min-w-0">
+        <div class="w-12 h-12 mx-auto bg-white border-3 theme-border rounded-full flex items-center justify-center text-xl mb-2">
+         📦
+        </div>
+        <h5 class="font-bold text-sm mb-1">Delivery</h5>
+        <p class="text-xs text-gray-600">Via Dropbox/Drive</p>
+       </div>
+      </div>
+     </div>
+    </section><!-- Artist Portfolio -->
+    <section class="mb-12">
+     <div class="flex items-center justify-center mb-8 gap-4 w-full">
+      <div class="flex-1 border-t-2 border-gray-400"></div>
+      <h2 class="title-font text-5xl md:text-6xl font-bold text-black theme-bg px-8 py-3 rounded-lg whitespace-nowrap flex-shrink-0">Artist Portfolio</h2>
+      <div class="flex-1 border-t-2 border-gray-400"></div>
+     </div><!-- Portfolio Category Buttons --> <!-- Art Style Categories -->
+     <div class="flex justify-center gap-3 mb-6 flex-wrap max-w-4xl mx-auto"><button onclick="showPortfolioCategory('chibi')" id="chibiPortBtn" class="theme-bg text-black font-semibold py-2 px-5 rounded-lg hover:opacity-90 transition"> Chibi </button> <button onclick="showPortfolioCategory('headshots')" id="headshotsPortBtn" class="bg-gray-300 text-black font-semibold py-2 px-5 rounded-lg hover:opacity-90 transition"> Headshots </button> <button onclick="showPortfolioCategory('busts')" id="bustsPortBtn" class="bg-gray-300 text-black font-semibold py-2 px-5 rounded-lg hover:opacity-90 transition"> Busts </button> <button onclick="showPortfolioCategory('halfbody')" id="halfbodyPortBtn" class="bg-gray-300 text-black font-semibold py-2 px-5 rounded-lg hover:opacity-90 transition"> Half Body </button> <button onclick="showPortfolioCategory('fullbody')" id="fullbodyPortBtn" class="bg-gray-300 text-black font-semibold py-2 px-5 rounded-lg hover:opacity-90 transition"> Full Body </button>
+     </div><!-- Divider Line -->
+     <div class="flex items-center justify-center mb-6 w-full">
+      <div class="flex-1 border-t-2 border-gray-300"></div><span class="px-4 text-gray-500 text-sm font-semibold flex-shrink-0">Special Categories</span>
+      <div class="flex-1 border-t-2 border-gray-300"></div>
+     </div><!-- Special Categories (Commissions & Merchandise) -->
+     <div class="flex justify-center gap-4 mb-8 flex-wrap max-w-4xl mx-auto"><button onclick="showPortfolioCategory('commissions')" id="commissionsPortBtn" class="bg-gray-300 text-black font-semibold py-3 px-8 rounded-lg text-lg hover:opacity-90 transition"> 🎨 Commissions </button> <button onclick="showPortfolioCategory('merchandise')" id="merchandisePortBtn" class="bg-gray-300 text-black font-semibold py-3 px-8 rounded-lg text-lg hover:opacity-90 transition"> 🛍️ Merchandise </button>
+     </div><!-- Chibi Portfolio -->
+     <div id="chibiPortfolio" class="portfolio-category">
+      <h3 class="subtitle-font text-2xl mb-6 text-center font-semibold">Chibi Examples</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+       <div class="portfolio-item aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openLightbox(this)"><span class="text-gray-500 text-center text-lg p-4">Chibi Art 1<br><span class="text-sm">(Click to enlarge)</span></span>
+       </div>
+       <div class="portfolio-item aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openLightbox(this)"><span class="text-gray-500 text-center text-lg p-4">Chibi Art 2<br><span class="text-sm">(Click to enlarge)</span></span>
+       </div>
+       <div class="portfolio-item aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openLightbox(this)"><span class="text-gray-500 text-center text-lg p-4">Chibi Art 3<br><span class="text-sm">(Click to enlarge)</span></span>
+       </div>
+       <div class="portfolio-item aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openLightbox(this)"><span class="text-gray-500 text-center text-lg p-4">Chibi Art 4<br><span class="text-sm">(Click to enlarge)</span></span>
+       </div>
+       <div class="portfolio-item aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openLightbox(this)"><span class="text-gray-500 text-center text-lg p-4">Chibi Art 5<br><span class="text-sm">(Click to enlarge)</span></span>
+       </div>
+       <div class="portfolio-item aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openLightbox(this)"><span class="text-gray-500 text-center text-lg p-4">Chibi Art 6<br><span class="text-sm">(Click to enlarge)</span></span>
+       </div>
+      </div>
+     </div><!-- Headshots Portfolio -->
+     <div id="headshotsPortfolio" class="portfolio-category hidden">
+      <h3 class="subtitle-font text-2xl mb-6 text-center font-semibold">Headshot Examples</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+       <div class="portfolio-item aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openLightbox(this)"><span class="text-gray-500 text-center text-lg p-4">Headshot Art 1<br><span class="text-sm">(Click to enlarge)</span></span>
+       </div>
+       <div class="portfolio-item aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openLightbox(this)"><span class="text-gray-500 text-center text-lg p-4">Headshot Art 2<br><span class="text-sm">(Click to enlarge)</span></span>
+       </div>
+       <div class="portfolio-item aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openLightbox(this)"><span class="text-gray-500 text-center text-lg p-4">Headshot Art 3<br><span class="text-sm">(Click to enlarge)</span></span>
+       </div>
+       <div class="portfolio-item aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openLightbox(this)"><span class="text-gray-500 text-center text-lg p-4">Headshot Art 4<br><span class="text-sm">(Click to enlarge)</span></span>
+       </div>
+       <div class="portfolio-item aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openLightbox(this)"><span class="text-gray-500 text-center text-lg p-4">Headshot Art 5<br><span class="text-sm">(Click to enlarge)</span></span>
+       </div>
+       <div class="portfolio-item aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openLightbox(this)"><span class="text-gray-500 text-center text-lg p-4">Headshot Art 6<br><span class="text-sm">(Click to enlarge)</span></span>
+       </div>
+      </div>
+     </div><!-- Busts Portfolio -->
+     <div id="bustsPortfolio" class="portfolio-category hidden">
+      <h3 class="subtitle-font text-2xl mb-6 text-center font-semibold">Bust Examples</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+       <div class="portfolio-item aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openLightbox(this)"><span class="text-gray-500 text-center text-lg p-4">Bust Art 1<br><span class="text-sm">(Click to enlarge)</span></span>
+       </div>
+       <div class="portfolio-item aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openLightbox(this)"><span class="text-gray-500 text-center text-lg p-4">Bust Art 2<br><span class="text-sm">(Click to enlarge)</span></span>
+       </div>
+       <div class="portfolio-item aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openLightbox(this)"><span class="text-gray-500 text-center text-lg p-4">Bust Art 3<br><span class="text-sm">(Click to enlarge)</span></span>
+       </div>
+       <div class="portfolio-item aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openLightbox(this)"><span class="text-gray-500 text-center text-lg p-4">Bust Art 4<br><span class="text-sm">(Click to enlarge)</span></span>
+       </div>
+       <div class="portfolio-item aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openLightbox(this)"><span class="text-gray-500 text-center text-lg p-4">Bust Art 5<br><span class="text-sm">(Click to enlarge)</span></span>
+       </div>
+       <div class="portfolio-item aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openLightbox(this)"><span class="text-gray-500 text-center text-lg p-4">Bust Art 6<br><span class="text-sm">(Click to enlarge)</span></span>
+       </div>
+      </div>
+     </div><!-- Half Body Portfolio -->
+     <div id="halfbodyPortfolio" class="portfolio-category hidden">
+      <h3 class="subtitle-font text-2xl mb-6 text-center font-semibold">Half Body Examples</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+       <div class="portfolio-item aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openLightbox(this)"><span class="text-gray-500 text-center text-lg p-4">Half Body Art 1<br><span class="text-sm">(Click to enlarge)</span></span>
+       </div>
+       <div class="portfolio-item aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openLightbox(this)"><span class="text-gray-500 text-center text-lg p-4">Half Body Art 2<br><span class="text-sm">(Click to enlarge)</span></span>
+       </div>
+       <div class="portfolio-item aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openLightbox(this)"><span class="text-gray-500 text-center text-lg p-4">Half Body Art 3<br><span class="text-sm">(Click to enlarge)</span></span>
+       </div>
+       <div class="portfolio-item aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openLightbox(this)"><span class="text-gray-500 text-center text-lg p-4">Half Body Art 4<br><span class="text-sm">(Click to enlarge)</span></span>
+       </div>
+       <div class="portfolio-item aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openLightbox(this)"><span class="text-gray-500 text-center text-lg p-4">Half Body Art 5<br><span class="text-sm">(Click to enlarge)</span></span>
+       </div>
+       <div class="portfolio-item aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openLightbox(this)"><span class="text-gray-500 text-center text-lg p-4">Half Body Art 6<br><span class="text-sm">(Click to enlarge)</span></span>
+       </div>
+      </div>
+     </div><!-- Full Body Portfolio -->
+     <div id="fullbodyPortfolio" class="portfolio-category hidden">
+      <h3 class="subtitle-font text-2xl mb-6 text-center font-semibold">Full Body Examples</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+       <div class="portfolio-item aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openLightbox(this)"><span class="text-gray-500 text-center text-lg p-4">Full Body Art 1<br><span class="text-sm">(Click to enlarge)</span></span>
+       </div>
+       <div class="portfolio-item aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openLightbox(this)"><span class="text-gray-500 text-center text-lg p-4">Full Body Art 2<br><span class="text-sm">(Click to enlarge)</span></span>
+       </div>
+       <div class="portfolio-item aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openLightbox(this)"><span class="text-gray-500 text-center text-lg p-4">Full Body Art 3<br><span class="text-sm">(Click to enlarge)</span></span>
+       </div>
+       <div class="portfolio-item aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openLightbox(this)"><span class="text-gray-500 text-center text-lg p-4">Full Body Art 4<br><span class="text-sm">(Click to enlarge)</span></span>
+       </div>
+       <div class="portfolio-item aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openLightbox(this)"><span class="text-gray-500 text-center text-lg p-4">Full Body Art 5<br><span class="text-sm">(Click to enlarge)</span></span>
+       </div>
+       <div class="portfolio-item aspect-square bg-gray-200 border-2 theme-border rounded-lg flex items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openLightbox(this)"><span class="text-gray-500 text-center text-lg p-4">Full Body Art 6<br><span class="text-sm">(Click to enlarge)</span></span>
+       </div>
+      </div>
+     </div><!-- Merchandise Portfolio -->
+     <div id="merchandisePortfolio" class="portfolio-category hidden">
+      <h3 class="subtitle-font text-2xl mb-3 text-center font-semibold">Merchandise Examples</h3><!-- Instruction message -->
+      <div id="noFandomSelected" class="text-center py-2 mb-4">
+       <p class="text-gray-500 text-lg">👇 Click a fandom button below to see merchandise!</p>
+      </div><!-- Fandom Category Groups -->
+      <div class="max-w-6xl mx-auto space-y-4 mb-8"><!-- Games -->
+       <div class="bg-white p-4 rounded-lg border-2 border-gray-300">
+        <h4 class="subtitle-font font-bold text-base mb-2 text-gray-700">🎮 Games</h4>
+        <div class="flex flex-wrap gap-2"><button onclick="showFandomMerch('genshin')" id="genshinBtn" class="bg-gray-200 text-black font-medium py-1.5 px-3 rounded-full text-sm hover:theme-bg hover:font-semibold transition">Genshin Impact</button> <button onclick="showFandomMerch('wuwa')" id="wuwaBtn" class="bg-gray-200 text-black font-medium py-1.5 px-3 rounded-full text-sm hover:theme-bg hover:font-semibold transition">Wuthering Waves</button> <button onclick="showFandomMerch('hsr')" id="hsrBtn" class="bg-gray-200 text-black font-medium py-1.5 px-3 rounded-full text-sm hover:theme-bg hover:font-semibold transition">Honkai Star Rail</button> <button onclick="showFandomMerch('ff7')" id="ff7Btn" class="bg-gray-200 text-black font-medium py-1.5 px-3 rounded-full text-sm hover:theme-bg hover:font-semibold transition">Final Fantasy VII</button> <button onclick="showFandomMerch('crk')" id="crkBtn" class="bg-gray-200 text-black font-medium py-1.5 px-3 rounded-full text-sm hover:theme-bg hover:font-semibold transition">Cookie Run Kingdom</button>
+        </div>
+       </div><!-- Anime and Manga -->
+       <div class="bg-white p-4 rounded-lg border-2 border-gray-300">
+        <h4 class="subtitle-font font-bold text-base mb-2 text-gray-700">📺 Anime &amp; Manga</h4>
+        <div class="flex flex-wrap gap-2"><button onclick="showFandomMerch('demonslayer')" id="demonslayerBtn" class="bg-gray-200 text-black font-medium py-1.5 px-3 rounded-full text-sm hover:theme-bg hover:font-semibold transition">Demon Slayer</button> <button onclick="showFandomMerch('apothecary')" id="apothecaryBtn" class="bg-gray-200 text-black font-medium py-1.5 px-3 rounded-full text-sm hover:theme-bg hover:font-semibold transition">The Apothecary Diaries</button> <button onclick="showFandomMerch('haikyuu')" id="haikyuuBtn" class="bg-gray-200 text-black font-medium py-1.5 px-3 rounded-full text-sm hover:theme-bg hover:font-semibold transition">Haikyuu</button> <button onclick="showFandomMerch('darling')" id="darlingBtn" class="bg-gray-200 text-black font-medium py-1.5 px-3 rounded-full text-sm hover:theme-bg hover:font-semibold transition">Darling in the Franxx</button> <button onclick="showFandomMerch('sailormoon')" id="sailormoonBtn" class="bg-gray-200 text-black font-medium py-1.5 px-3 rounded-full text-sm hover:theme-bg hover:font-semibold transition">Sailor Moon</button> <button onclick="showFandomMerch('frieren')" id="frierenBtn" class="bg-gray-200 text-black font-medium py-1.5 px-3 rounded-full text-sm hover:theme-bg hover:font-semibold transition">Frieren</button> <button onclick="showFandomMerch('jjk')" id="jjkBtn" class="bg-gray-200 text-black font-medium py-1.5 px-3 rounded-full text-sm hover:theme-bg hover:font-semibold transition">Jujutsu Kaisen</button>
+        </div>
+        <h5 class="subtitle-font font-semibold text-sm mb-2 mt-3 text-gray-600 italic">Danmei</h5>
+        <div class="flex flex-wrap gap-2"><button onclick="showFandomMerch('svsss')" id="svsssBtn" class="bg-gray-200 text-black font-medium py-1.5 px-3 rounded-full text-sm hover:theme-bg hover:font-semibold transition">SVSSS</button> <button onclick="showFandomMerch('tgcf')" id="tgcfBtn" class="bg-gray-200 text-black font-medium py-1.5 px-3 rounded-full text-sm hover:theme-bg hover:font-semibold transition">TGCF</button> <button onclick="showFandomMerch('mdzs')" id="mdzsBtn" class="bg-gray-200 text-black font-medium py-1.5 px-3 rounded-full text-sm hover:theme-bg hover:font-semibold transition">MDZS</button>
+        </div>
+       </div><!-- Music and Virtual Idols -->
+       <div class="bg-white p-4 rounded-lg border-2 border-gray-300">
+        <h4 class="subtitle-font font-bold text-base mb-2 text-gray-700">🎵 Music &amp; Virtual Idols</h4>
+        <div class="flex flex-wrap gap-2"><button onclick="showFandomMerch('vocaloid')" id="vocaloidBtn" class="bg-gray-200 text-black font-medium py-1.5 px-3 rounded-full text-sm hover:theme-bg hover:font-semibold transition">Vocaloid</button> <button onclick="showFandomMerch('alienstage')" id="alienstageBtn" class="bg-gray-200 text-black font-medium py-1.5 px-3 rounded-full text-sm hover:theme-bg hover:font-semibold transition">Alien Stage</button>
+        </div>
+       </div><!-- Others -->
+       <div class="bg-white p-4 rounded-lg border-2 border-gray-300">
+        <h4 class="subtitle-font font-bold text-base mb-2 text-gray-700">✨ Others</h4>
+        <div class="flex flex-wrap gap-2"><button onclick="showFandomMerch('original')" id="originalBtn" class="bg-gray-200 text-black font-medium py-1.5 px-3 rounded-full text-sm hover:theme-bg hover:font-semibold transition">Original <span class="text-xs">(My OCs)</span></button> <button onclick="showFandomMerch('others')" id="othersBtn" class="bg-gray-200 text-black font-medium py-1.5 px-3 rounded-full text-sm hover:theme-bg hover:font-semibold transition">Mixed Fandoms</button>
+        </div>
+       </div>
+      </div><!-- Fandom Merchandise Gallery -->
+      <div id="fandomMerchGallery" class="hidden">
+       <h4 class="subtitle-font text-xl mb-4 text-center font-semibold theme-text" id="fandomTitle"></h4>
+       <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="fandomMerchGrid"></div>
+      </div>
+     </div><!-- Commissions Portfolio -->
+     <div id="commissionsPortfolio" class="portfolio-category hidden">
+      <h3 class="subtitle-font text-2xl mb-6 text-center font-semibold">Past Commissions</h3>
+      <p class="text-center text-gray-600 mb-6">Artwork created for my wonderful clients!</p>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"><!-- Commission Item 1 -->
+       <div class="bg-white border-2 theme-border rounded-lg overflow-hidden cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openCommissionLightbox(this)">
+        <div class="aspect-square bg-gray-200 flex items-center justify-center"><span class="text-gray-500 text-center text-sm p-2">Commission Art 1<br>
+          (Your Image Here)<br><span class="text-xs">(Click to enlarge)</span></span>
+        </div>
+        <div class="p-4 bg-gray-50">
+         <p class="subtitle-font text-sm text-gray-700 text-center"><span class="font-semibold theme-text">For:</span> @ClientUsername1</p>
+        </div>
+       </div><!-- Commission Item 2 -->
+       <div class="bg-white border-2 theme-border rounded-lg overflow-hidden cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openCommissionLightbox(this)">
+        <div class="aspect-square bg-gray-200 flex items-center justify-center"><span class="text-gray-500 text-center text-sm p-2">Commission Art 2<br>
+          (Your Image Here)<br><span class="text-xs">(Click to enlarge)</span></span>
+        </div>
+        <div class="p-4 bg-gray-50">
+         <p class="subtitle-font text-sm text-gray-700 text-center"><span class="font-semibold theme-text">For:</span> @ClientUsername2</p>
+        </div>
+       </div><!-- Commission Item 3 -->
+       <div class="bg-white border-2 theme-border rounded-lg overflow-hidden cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openCommissionLightbox(this)">
+        <div class="aspect-square bg-gray-200 flex items-center justify-center"><span class="text-gray-500 text-center text-sm p-2">Commission Art 3<br>
+          (Your Image Here)<br><span class="text-xs">(Click to enlarge)</span></span>
+        </div>
+        <div class="p-4 bg-gray-50">
+         <p class="subtitle-font text-sm text-gray-700 text-center"><span class="font-semibold theme-text">For:</span> @ClientUsername3</p>
+        </div>
+       </div><!-- Commission Item 4 -->
+       <div class="bg-white border-2 theme-border rounded-lg overflow-hidden cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openCommissionLightbox(this)">
+        <div class="aspect-square bg-gray-200 flex items-center justify-center"><span class="text-gray-500 text-center text-sm p-2">Commission Art 4<br>
+          (Your Image Here)<br><span class="text-xs">(Click to enlarge)</span></span>
+        </div>
+        <div class="p-4 bg-gray-50">
+         <p class="subtitle-font text-sm text-gray-700 text-center"><span class="font-semibold theme-text">For:</span> @ClientUsername4</p>
+        </div>
+       </div><!-- Commission Item 5 -->
+       <div class="bg-white border-2 theme-border rounded-lg overflow-hidden cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openCommissionLightbox(this)">
+        <div class="aspect-square bg-gray-200 flex items-center justify-center"><span class="text-gray-500 text-center text-sm p-2">Commission Art 5<br>
+          (Your Image Here)<br><span class="text-xs">(Click to enlarge)</span></span>
+        </div>
+        <div class="p-4 bg-gray-50">
+         <p class="subtitle-font text-sm text-gray-700 text-center"><span class="font-semibold theme-text">For:</span> @ClientUsername5</p>
+        </div>
+       </div><!-- Commission Item 6 -->
+       <div class="bg-white border-2 theme-border rounded-lg overflow-hidden cursor-pointer hover:shadow-xl transition-shadow duration-300" onclick="openCommissionLightbox(this)">
+        <div class="aspect-square bg-gray-200 flex items-center justify-center"><span class="text-gray-500 text-center text-sm p-2">Commission Art 6<br>
+          (Your Image Here)<br><span class="text-xs">(Click to enlarge)</span></span>
+        </div>
+        <div class="p-4 bg-gray-50">
+         <p class="subtitle-font text-sm text-gray-700 text-center"><span class="font-semibold theme-text">For:</span> @ClientUsername6</p>
+        </div>
+       </div>
+      </div>
+     </div>
+    </section><!-- What I Can/Can't Do -->
+    <section class="mb-12">
+     <h2 class="title-font text-3xl mb-4">What I Can / Can't Do</h2>
+     <div class="grid md:grid-cols-2 gap-6">
+      <div class="bg-green-50 p-6 rounded-lg border-2 border-green-500">
+       <h3 class="font-bold text-xl mb-3 text-green-700">✓ Can Do</h3>
+       <ul class="subtitle-font space-y-2">
+        <li>→ Fanart, original characters, ships, and couples</li>
+        <li>→ PFP/Icons</li>
+        <li>→ Light anthro features such as ears, tails, or slight fur</li>
+        <li>→ Light action/dynamic poses (if reference provided)</li>
+        <li>→ Simple backgrounds</li>
+       </ul>
+      </div>
+      <div class="bg-red-50 p-6 rounded-lg border-2 border-red-500">
+       <h3 class="font-bold text-xl mb-3 text-red-700">✗ Can't Do</h3>
+       <ul class="subtitle-font space-y-2">
+        <li>→ Mecha</li>
+        <li>→ Heavy NSFW</li>
+        <li>→ Furries</li>
+        <li>→ Hate symbols/offensive content</li>
+        <li>→ Gore/extreme violence (slight blood is okay)</li>
+        <li>→ Complicated perspectives</li>
+        <li>→ Complex backgrounds</li>
+       </ul>
+      </div>
+     </div>
+    </section><!-- Payment Methods -->
+    <section class="mb-12 bg-gray-50 p-6 rounded-lg border-2 theme-border">
+     <h2 class="title-font text-3xl mb-4">Payment Methods</h2>
+     <p class="subtitle-font text-lg">Accepted: <strong>Gcash</strong> and <strong>PayPal</strong></p>
+    </section><!-- Terms & Conditions and Usage & Licensing -->
+    <section class="mb-12 grid md:grid-cols-2 gap-6"><!-- Terms & Conditions -->
+     <div><button onclick="toggleTerms()" class="w-full theme-bg text-black font-bold py-4 px-6 rounded-lg text-2xl hover:opacity-90 transition flex items-center justify-between"> <span class="title-font">Terms &amp; Conditions</span> <span id="termsArrow" class="text-3xl">▼</span> </button>
+      <div id="termsContent" class="hidden bg-gray-50 p-6 rounded-b-lg border-2 border-t-0 theme-border subtitle-font space-y-6 mt-0">
+       <p class="font-semibold text-lg text-center">By commissioning me, you confirm that you have read and agreed to the following terms. Please take a moment to read everything carefully before placing an order.</p>
+       <div class="bg-white p-5 rounded-lg border-2 border-gray-200">
+        <h3 class="font-bold text-xl mb-3 theme-text">💰 Payment</h3>
+        <ul class="space-y-2 text-base">
+         <li>• A 50% deposit is required to begin work after the initial sketch is approved. This secures your slot in my schedule and allows me to start the commission.</li>
+         <li>• The remaining balance must be paid before the final artwork is delivered.</li>
+         <li>• Once work has started, deposits are non-refundable, as this time and effort cannot be recovered.</li>
+         <li>• If the buyer cancels after work has begun, the deposit will be kept to compensate for completed progress.</li>
+         <li>• If the artist needs to cancel for any reason, a partial or full refund will be issued depending on the stage of completion.</li>
+         <li>• Chargebacks are not allowed. Filing a chargeback will result in loss of usage rights to the artwork and may lead to further action.</li>
+        </ul>
+       </div>
+       <div class="bg-white p-5 rounded-lg border-2 border-gray-200">
+        <h3 class="font-bold text-xl mb-3 theme-text">✏️ Revisions</h3>
+        <ul class="space-y-2 text-base">
+         <li>• You may request up to three revisions during the sketch stage to adjust details and ensure the concept is right.</li>
+         <li>• Small adjustments such as color tweaks or minor expression changes are welcome during the appropriate stages.</li>
+         <li>• Once the sketch is approved, no further changes will be made unless the issue is due to an error on my part. Any mistakes I make will always be corrected at no extra cost.</li>
+         <li>• Major redesigns or complete changes after approval may require an additional fee.</li>
+        </ul>
+       </div>
+       <div class="bg-white p-5 rounded-lg border-2 border-gray-200">
+        <h3 class="font-bold text-xl mb-3 theme-text">⏰ Delivery &amp; Turnaround</h3>
+        <ul class="space-y-2 text-base">
+         <li>• Commissions may take up to a week or month/months depending on complexity, queue size, health, school, or personal matters.</li>
+         <li>• An estimated turnaround time will be provided, and I will keep you updated if delays occur.</li>
+         <li>• Final digital files are delivered via Dropbox, Google Drive, or your provided email, which will remain available for two weeks unless otherwise requested. Please download your files within that time.</li>
+         <li>• Clear references for poses, colors, outfits, and character details are required to ensure the best possible result.</li>
+        </ul>
+       </div>
+       <div class="bg-white p-5 rounded-lg border-2 border-gray-200">
+        <h3 class="font-bold text-xl mb-3 theme-text">💬 Communication</h3>
+        <p class="text-base mb-3">Clear communication helps everything run smoothly. If no response is received within one week, I will proceed with the commission based on the latest approved details.</p>
+        <p class="text-base mb-3">If the artwork is finished and the client becomes unresponsive, I will send a final reminder. If there is still no response after two weeks, the commission will be considered fulfilled. Any payments made are non-refundable.</p>
+        <p class="text-base">The final artwork will be released once the remaining balance is paid. Unclaimed commissions will be archived.</p>
+       </div>
+       <div class="bg-white p-5 rounded-lg border-2 border-gray-200">
+        <h3 class="font-bold text-xl mb-4 theme-text">📜 Usage &amp; Licensing</h3>
+        <div class="mb-4">
+         <p class="font-bold text-base mb-2">Personal Use:</p>
+         <p class="text-base text-gray-700">Artwork may be used for personal display such as profile pictures, banners, social media posts with credit, or printing for personal use only.</p>
+        </div>
+        <div class="border-t-2 border-gray-200 pt-4">
+         <p class="font-bold text-base mb-3">Commercial Use:</p>
+         <p class="text-base text-gray-700 mb-3">Commercial use is not included by default and must be approved in writing.</p>
+         <div class="space-y-3 ml-4">
+          <div class="bg-gray-50 p-3 rounded-lg border border-gray-300">
+           <p class="font-semibold text-base theme-text mb-1">Streamer Commercial License: $25 USD</p>
+           <p class="text-sm text-gray-700">Allows use for streaming content, overlays, thumbnails, watermarks, and logos.</p>
+          </div>
+          <div class="bg-gray-50 p-3 rounded-lg border border-gray-300">
+           <p class="font-semibold text-base theme-text mb-1">Merchandise Commercial License: $60 USD</p>
+           <p class="text-sm text-gray-700">Includes streamer usage and allows selling, advertising, and merchandise use with proper credit.</p>
+          </div>
+         </div>
+         <p class="text-base text-gray-700 mt-3 italic">If commercial use is requested after a commission is completed, the applicable license fee will still apply.</p>
+        </div>
+       </div>
+       <div class="bg-white p-5 rounded-lg border-2 border-gray-200">
+        <h3 class="font-bold text-xl mb-3 theme-text">🔗 Credit &amp; Sharing</h3>
+        <ul class="space-y-2 text-base">
+         <li>• Credit must be given when posting the artwork publicly through tagging, labeling, or verbal acknowledgment. One initial credit per platform is sufficient.</li>
+         <li>• You may not remove signatures or watermarks.</li>
+         <li>• If you prefer the artwork not to be posted publicly, please communicate this clearly before work begins.</li>
+         <li>• Unless requested otherwise, I may share completed commissions for portfolio, social media, and promotional purposes.</li>
+        </ul>
+       </div>
+       <div class="bg-white p-5 rounded-lg border-2 border-gray-200">
+        <h3 class="font-bold text-xl mb-3 theme-text">©️ Copyright &amp; Intellectual Property</h3>
+        <ul class="space-y-2 text-base">
+         <li>• All artwork remains the intellectual property of the artist. You are purchasing usage rights, not ownership.</li>
+         <li>• AI and NFT use is strictly prohibited. My work may not be used in AI datasets, engines, generators, or minted as NFTs under any circumstances.</li>
+         <li>��� Unauthorized commercial use is not allowed and may result in further action.</li>
+        </ul>
+       </div>
+       <div class="bg-white p-5 rounded-lg border-2 border-gray-200">
+        <h3 class="font-bold text-xl mb-3 theme-text">🎨 Artist Rights</h3>
+        <ul class="space-y-2 text-base">
+         <li>• I reserve the right to decline commissions that fall outside my skill set or involve subjects I am not comfortable drawing.</li>
+         <li>• I may use commissioned artwork to promote my services, post on social media, display in my portfolio, or create prints for fanart commissions.</li>
+        </ul>
+       </div>
+       <div class="bg-white p-5 rounded-lg border-2 border-gray-200">
+        <h3 class="font-bold text-xl mb-3 theme-text">✅ Commissioner Rights &amp; Restrictions</h3>
+        <p class="font-semibold text-base mb-2">You may:</p>
+        <ul class="space-y-2 text-base mb-4">
+         <li>��� Use the artwork for personal purposes only unless commercial rights are purchased.</li>
+         <li>• Print the artwork for yourself.</li>
+         <li>• Post it on social media with proper credit to @Abortius.</li>
+        </ul>
+        <p class="font-semibold text-base mb-2">You may not:</p>
+        <ul class="space-y-2 text-base">
+         <li>• Use the artwork commercially without permission.</li>
+         <li>• Claim the artwork as your own or fail to credit the artist.</li>
+         <li>• Remove signatures or watermarks.</li>
+         <li>• Resell, redistribute, or modify the artwork without consent.</li>
+         <li>• Use personal use artwork for merch, streaming, or commercial projects.</li>
+        </ul>
+       </div>
+       <div class="bg-white p-5 rounded-lg border-2 border-gray-200">
+        <h3 class="font-bold text-xl mb-3 theme-text">🚫 Right to Refusal</h3>
+        <ul class="space-y-2 text-base">
+         <li>• The buyer may decline a commission before completion, but any payments made are non-refundable once work has started.</li>
+         <li>• The artist reserves the right to refuse or cancel a commission at any time. If cancellation occurs after work has begun, a partial refund will be issued based on progress.</li>
+        </ul>
+       </div>
+       <div class="bg-white p-5 rounded-lg border-2 border-gray-200">
+        <h3 class="font-bold text-xl mb-3 theme-text">⚠����� Blacklist Policy</h3>
+        <p class="text-base">Repeated or serious violations of these terms may result in refusal of future commissions. In severe cases, evidence may be shared with other artists to protect the community.</p>
+       </div>
+       <div class="bg-white p-5 rounded-lg border-2 border-gray-200">
+        <h3 class="font-bold text-xl mb-3 theme-text">📝 Final Agreement</h3>
+        <p class="text-base">Once the deposit is paid, all terms above are considered accepted and binding. This ensures clarity, fairness, and a smooth experience for both the artist and the client.</p>
+       </div>
+      </div>
+     </div><!-- Usage & Licensing -->
+     <div><button onclick="toggleUsage()" class="w-full theme-bg text-black font-bold py-4 px-6 rounded-lg text-2xl hover:opacity-90 transition flex items-center justify-between"> <span class="title-font">Usage &amp; Licensing</span> <span id="usageArrow" class="text-3xl">▼</span> </button>
+      <div id="usageContent" class="hidden bg-gray-50 p-6 rounded-b-lg border-2 border-t-0 theme-border subtitle-font space-y-5 mt-0">
+       <p class="text-center text-base font-semibold">All commissioned artwork includes Personal Use rights by default. Commercial licenses must be purchased separately.</p>
+       <div class="bg-white p-5 rounded-lg border-2 theme-border">
+        <h3 class="font-bold text-xl mb-3 theme-text">Personal Use (Included)</h3>
+        <div class="space-y-3">
+         <div>
+          <p class="font-semibold text-base mb-1">✓ What You CAN Do:</p>
+          <ul class="text-sm text-gray-700 space-y-1 ml-4">
+           <li>• Use as profile pictures, avatars, or banners on social media</li>
+           <li>• Post on personal social media accounts with credit to the artist</li>
+           <li>• Use on Discord, forums, or personal websites</li>
+           <li>• Print for personal display (posters, decorations, etc.)</li>
+           <li>• Share with friends and family for personal enjoyment</li>
+          </ul>
+         </div>
+         <div class="border-t pt-3">
+          <p class="font-semibold text-base mb-1">✗ What You CANNOT Do:</p>
+          <ul class="text-sm text-gray-700 space-y-1 ml-4">
+           <li>• Use for any business, brand, or commercial purposes</li>
+           <li>• Use for streaming overlays, logos, or content creation monetization</li>
+           <li>• Sell prints, merchandise, or any products featuring the artwork</li>
+           <li>• Use in advertising, marketing, or promotional materials</li>
+           <li>• Remove the artist's signature or watermark</li>
+           <li>• Claim the artwork as your own creation</li>
+          </ul>
+         </div>
+        </div>
+       </div>
+       <div class="bg-white p-5 rounded-lg border-2 theme-border">
+        <h3 class="font-bold text-xl mb-3 theme-text">Streamer Commercial License: $25 USD</h3>
+        <p class="text-base mb-3 text-gray-700">This license is designed for content creators, streamers, and YouTubers who want to use commissioned artwork in their monetized content.</p>
+        <div class="space-y-3">
+         <div>
+          <p class="font-semibold text-base mb-1">✓ What You CAN Do:</p>
+          <ul class="text-sm text-gray-700 space-y-1 ml-4">
+           <li>• Use as logos, watermarks, or channel branding</li>
+           <li>• Use in stream overlays, panels, and alerts</li>
+           <li>• Use in video thumbnails and YouTube/Twitch graphics</li>
+           <li>• Display during monetized streams or videos</li>
+           <li>• Use for personal brand identity across platforms</li>
+           <li>• Print for personal promotional materials (business cards, convention displays)</li>
+          </ul>
+         </div>
+         <div class="border-t pt-3">
+          <p class="font-semibold text-base mb-1">✗ What You CANNOT Do:</p>
+          <ul class="text-sm text-gray-700 space-y-1 ml-4">
+           <li>• Sell merchandise featuring the artwork (t-shirts, stickers, mugs, etc.)</li>
+           <li>• Sublicense or sell the artwork to third parties</li>
+           <li>• Use for mass-produced products or commercial merchandise</li>
+           <li>• Use in advertising campaigns for products or services</li>
+           <li>• Allow others to use the artwork commercially</li>
+          </ul>
+         </div>
+         <div class="bg-yellow-50 p-3 rounded border border-yellow-300 mt-3">
+          <p class="text-sm"><strong>Note:</strong> You must still credit the artist when using the artwork (e.g., "Art by @jadentearl" in your about section or credits).</p>
+         </div>
+        </div>
+       </div>
+       <div class="bg-white p-5 rounded-lg border-2 theme-border">
+        <h3 class="font-bold text-xl mb-3 theme-text">Merchandise Commercial License: $60 USD</h3>
+        <p class="text-base mb-3 text-gray-700">This comprehensive license includes all Streamer rights PLUS the ability to sell merchandise and products featuring the commissioned artwork.</p>
+        <div class="space-y-3">
+         <div>
+          <p class="font-semibold text-base mb-1">✓ What You CAN Do (Includes Everything from Streamer License PLUS):</p>
+          <ul class="text-sm text-gray-700 space-y-1 ml-4">
+           <li>• Sell merchandise featuring the artwork (t-shirts, hoodies, stickers, pins, etc.)</li>
+           <li>• Use in advertising and promotional materials for your products</li>
+           <li>• Print and sell at conventions, markets, or online stores</li>
+           <li>• Use for product packaging or branding</li>
+           <li>• Create multiple merchandise items from the same artwork</li>
+           <li>• Use in commercial marketing campaigns for your brand</li>
+          </ul>
+         </div>
+         <div class="border-t pt-3">
+          <p class="font-semibold text-base mb-1">✗ What You STILL CANNOT Do:</p>
+          <ul class="text-sm text-gray-700 space-y-1 ml-4">
+           <li>• Sublicense or sell the artwork rights to another company or person</li>
+           <li>• Claim ownership of the original artwork or copyright</li>
+           <li>• Use in NFTs or AI training datasets</li>
+           <li>• Modify the artwork significantly without artist permission</li>
+           <li>• Remove the artist's signature from merchandise</li>
+          </ul>
+         </div>
+         <div class="bg-yellow-50 p-3 rounded border border-yellow-300 mt-3">
+          <p class="text-sm"><strong>Important:</strong> You must credit the artist on your merchandise or product listings (e.g., "Artwork by @jadentearl" on product descriptions or tags).</p>
+         </div>
+        </div>
+       </div>
+       <div class="bg-blue-50 p-4 rounded-lg border-2 border-blue-300">
+        <p class="text-sm font-semibold mb-2">💡 Need Help Choosing?</p>
+        <ul class="text-sm space-y-1">
+         <li>• <strong>Personal Use Only?</strong> You're all set! This is included in your commission.</li>
+         <li>• <strong>Content Creator/Streamer?</strong> Get the Streamer Commercial License ($25) for branding and monetized content.</li>
+         <li>• <strong>Selling Merch or Products?</strong> You need the Merchandise Commercial License ($60) which includes everything.</li>
+         <li>• <strong>Not Sure?</strong> Feel free to ask! I'm happy to help you choose the right license for your needs.</li>
+        </ul>
+       </div>
+      </div>
+     </div>
+    </section><!-- Ready to Order Section -->
+    <section class="mb-12 text-center">
+     <div class="bg-gradient-to-r from-yellow-100 to-yellow-50 p-8 rounded-lg border-4 theme-border">
+      <h2 class="title-font text-4xl mb-4">Ready to Order?</h2>
+      <p class="subtitle-font text-lg mb-6">Contact me through my socials and fill out the commission form to get started!</p>
+      <p class="subtitle-font text-sm mb-8 text-gray-600">The form helps document your order details and confirms you understand the terms and conditions.</p>
+      <div class="flex flex-col md:flex-row gap-4 justify-center items-center max-w-2xl mx-auto"><button onclick="openSocials()" class="theme-bg text-black font-bold py-4 px-8 rounded-lg text-xl hover:opacity-90 transition w-full md:w-auto"> 💬 Contact Me </button> <a href="https://forms.gle/1yaN8HAtKcf9YQ5r5" target="_blank" rel="noopener noreferrer" class="bg-black text-white font-bold py-4 px-8 rounded-lg text-xl hover:opacity-90 transition w-full md:w-auto"> 📋 Fill Commission Form </a>
+      </div>
+     </div>
+    </section>
+   </div>
+  </div><!-- Floating CTA Button --> <button onclick="openSocials()" class="floating-cta theme-bg text-black font-bold py-3 px-6 rounded-full text-lg hover:opacity-90 transition"> 💌 Get Started </button> <!-- Socials Modal -->
+  <div id="socialsModal" class="modal">
+   <div class="modal-content"><span class="close" onclick="closeSocials()">×</span>
+    <h2 class="title-font text-3xl mb-6">Connect With Me</h2>
+    <div class="space-y-4"><a href="https://www.instagram.com/jadentearl" target="_blank" rel="noopener noreferrer" class="block theme-bg text-black font-semibold py-3 px-6 rounded-lg text-center hover:opacity-90 transition"> 📷 Instagram </a> <a href="https://www.tiktok.com/@jadentearl" target="_blank" rel="noopener noreferrer" class="block theme-bg text-black font-semibold py-3 px-6 rounded-lg text-center hover:opacity-90 transition"> 🎵 TikTok </a> <a href="https://discord.com/users/jadentearl" target="_blank" rel="noopener noreferrer" class="block theme-bg text-black font-semibold py-3 px-6 rounded-lg text-center hover:opacity-90 transition"> 💬 Discord </a> <a href="https://x.com/jadentearl" target="_blank" rel="noopener noreferrer" class="block theme-bg text-black font-semibold py-3 px-6 rounded-lg text-center hover:opacity-90 transition"> 𝕏 X (Twitter) </a> <a href="https://www.twitch.tv/jadentearl" target="_blank" rel="noopener noreferrer" class="block theme-bg text-black font-semibold py-3 px-6 rounded-lg text-center hover:opacity-90 transition"> 📺 Twitch </a>
+     <div class="border-t-2 border-gray-300 my-6"></div><a href="https://vgen.co/jadentearl/characters" target="_blank" rel="noopener noreferrer" class="block bg-green-500 text-white font-semibold py-3 px-6 rounded-lg text-center hover:opacity-90 transition"> 🎨 Vgen </a> <a href="https://kirke.social/jadentearl" target="_blank" rel="noopener noreferrer" class="block bg-orange-500 text-white font-semibold py-3 px-6 rounded-lg text-center hover:opacity-90 transition"> 🥕 Kirke.Social </a>
+    </div>
+   </div>
+  </div><!-- Shop Modal -->
+  <div id="shopModal" class="modal">
+   <div class="modal-content"><span class="close" onclick="closeShop()">×</span>
+    <h2 class="title-font text-3xl mb-4">Visit My Shop</h2>
+    <p class="subtitle-font text-center mb-6 text-gray-700">You'll be redirected to my Ko-fi shop where you can browse and purchase my merchandise!</p><a href="https://ko-fi.com/jadentearl/shop" target="_blank" rel="noopener noreferrer" class="block theme-bg text-black font-bold py-4 px-8 rounded-lg text-xl text-center hover:opacity-90 transition"> 🛍️ Go to Ko-fi Shop </a>
+   </div>
+  </div><!-- Lightbox for Portfolio Images -->
+  <div id="lightbox" class="lightbox" onclick="closeLightbox()">
+   <div class="lightbox-content"><span class="lightbox-close" onclick="closeLightbox()">×</span>
+    <div class="lightbox-image bg-gray-200 border-4 theme-border rounded-lg flex items-center justify-center"><img id="lightboxImage" src="" alt="Enlarged View" style="width: 100%; height: 100%; object-fit: contain; display: none;"><span class="text-gray-500 text-center text-2xl p-8" id="lightboxText">Enlarged Artwork Preview</span>
+    </div>
+   </div>
+  </div>
+  <script>
+    const defaultConfig = {
+      artist_name: "Jaden Tearl",
+      section_title: "Commission Options"
+    };
+
+    let currentStyle = 'anime';
+    let currentSubStyle = 'standard';
+    let currentVersion = {
+      'chibi-typeA': 'lineart',
+      'chibi-ych': 'lineart',
+      'anime': 'lineart'
+    };
+
+    const prices = {
+      'chibi-typeA': {
+        lineart: { headshot: '$5', bust: '$7', halfbody: '$10', fullbody: '$12' },
+        base: { headshot: '$10', bust: '$12', halfbody: '$15', fullbody: '$20' },
+        rendered: { headshot: '$15', bust: '$18', halfbody: '$22', fullbody: '$25' }
+      },
+      'chibi-ych': {
+        lineart: { headshot: '$5', bust: '$6', halfbody: '$9' },
+        base: { headshot: '$8', bust: '$10', halfbody: '$14' },
+        rendered: { headshot: '$13', bust: '$14', halfbody: '$20' }
+      },
+      'anime': {
+        lineart: { headshot: '$8', bust: '$10', halfbody: '$12', fullbody: '$15' },
+        base: { headshot: '$12', bust: '$15', halfbody: '$18', fullbody: '$25' },
+        rendered: { headshot: '$20', bust: '$25', halfbody: '$35', fullbody: '$45' }
+      }
+    };
+
+    // Fandom merchandise data
+    const fandomData = {
+      genshin: { name: 'Genshin Impact', items: ['Sticker', 'Button Pin', 'Art Print', 'Keychain', 'Sticker', 'Button Pin'] },
+      wuwa: { name: 'Wuthering Waves', items: ['Sticker', 'Button Pin', 'Keychain', 'Art Print'] },
+      hsr: { name: 'Honkai Star Rail', items: ['Sticker', 'Button Pin', 'Art Print', 'Keychain', 'Sticker'] },
+      ff7: { name: 'Final Fantasy VII', items: ['Art Print', 'Keychain', 'Sticker'] },
+      crk: { name: 'Cookie Run Kingdom', items: ['Sticker', 'Button Pin', 'Keychain'] },
+      demonslayer: { name: 'Demon Slayer', items: ['Sticker', 'Button Pin', 'Art Print', 'Keychain', 'Sticker', 'Button Pin'] },
+      apothecary: { name: 'The Apothecary Diaries', items: ['Sticker', 'Art Print', 'Button Pin'] },
+      haikyuu: { name: 'Haikyuu', items: ['Sticker', 'Button Pin', 'Keychain', 'Art Print'] },
+      darling: { name: 'Darling in the Franxx', items: ['Sticker', 'Art Print', 'Keychain'] },
+      sailormoon: { name: 'Sailor Moon', items: ['Sticker', 'Button Pin', 'Art Print', 'Keychain', 'Sticker'] },
+      frieren: { name: 'Frieren', items: ['Sticker', 'Button Pin', 'Art Print'] },
+      jjk: { name: 'Jujutsu Kaisen', items: ['Sticker', 'Button Pin', 'Art Print', 'Keychain', 'Sticker', 'Button Pin'] },
+      svsss: { name: 'SVSSS', items: ['Sticker', 'Button Pin', 'Art Print', 'Keychain'] },
+      tgcf: { name: 'TGCF', items: ['Sticker', 'Button Pin', 'Art Print', 'Keychain', 'Sticker'] },
+      mdzs: { name: 'MDZS', items: ['Sticker', 'Button Pin', 'Art Print', 'Keychain'] },
+      vocaloid: { name: 'Vocaloid', items: ['Sticker', 'Button Pin', 'Art Print', 'Keychain', 'Sticker', 'Button Pin'] },
+      alienstage: { name: 'Alien Stage', items: ['Sticker', 'Button Pin', 'Art Print'] },
+      original: { name: 'Original (My OCs)', items: ['Sticker', 'Button Pin', 'Art Print', 'Keychain', 'Sticker'] },
+      others: { name: 'Mixed Fandoms', items: ['Sticker', 'Button Pin', 'Art Print', 'Keychain', 'Sticker', 'Button Pin'] }
+    };
+
+    let currentFandom = null;
+
+    function openSocials() {
+      document.getElementById('socialsModal').style.display = 'block';
+    }
+
+    function closeSocials() {
+      document.getElementById('socialsModal').style.display = 'none';
+    }
+
+    function openShop() {
+      document.getElementById('shopModal').style.display = 'block';
+    }
+
+    function closeShop() {
+      document.getElementById('shopModal').style.display = 'none';
+    }
+
+    function scrollToCommissions() {
+      document.getElementById('commissionSection').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function showStyle(style) {
+      currentStyle = style;
+      
+      // Hide all sections
+      document.getElementById('chibiTypeASection').classList.add('hidden');
+      document.getElementById('animeSection').classList.add('hidden');
+      
+      // Reset all button styles
+      document.getElementById('chibiTypeABtn').classList.remove('theme-bg');
+      document.getElementById('chibiTypeABtn').classList.add('bg-gray-300');
+      document.getElementById('animeBtn').classList.remove('theme-bg');
+      document.getElementById('animeBtn').classList.add('bg-gray-300');
+      
+      // Show selected section and highlight button
+      if (style === 'anime') {
+        document.getElementById('animeSection').classList.remove('hidden');
+        document.getElementById('animeBtn').classList.add('theme-bg');
+        document.getElementById('animeBtn').classList.remove('bg-gray-300');
+        selectVersion('anime', currentVersion['anime']);
+      } else if (style === 'chibi-typeA') {
+        document.getElementById('chibiTypeASection').classList.remove('hidden');
+        document.getElementById('chibiTypeABtn').classList.add('theme-bg');
+        document.getElementById('chibiTypeABtn').classList.remove('bg-gray-300');
+        showSubStyle(currentSubStyle);
+      }
+    }
+
+    function showSubStyle(subStyle) {
+      currentSubStyle = subStyle;
+      
+      // Hide all sub-sections
+      document.getElementById('standardSection').classList.add('hidden');
+      document.getElementById('ychSection').classList.add('hidden');
+      document.getElementById('pngtuberSection').classList.add('hidden');
+      document.getElementById('emotesSubSection').classList.add('hidden');
+      
+      // Reset all sub-button styles
+      document.getElementById('standardBtn').classList.remove('theme-bg');
+      document.getElementById('standardBtn').classList.add('bg-gray-300');
+      document.getElementById('ychBtn').classList.remove('theme-bg');
+      document.getElementById('ychBtn').classList.add('bg-gray-300');
+      document.getElementById('pngtuberBtn').classList.remove('theme-bg');
+      document.getElementById('pngtuberBtn').classList.add('bg-gray-300');
+      document.getElementById('emotesSubBtn').classList.remove('theme-bg');
+      document.getElementById('emotesSubBtn').classList.add('bg-gray-300');
+      
+      // Show selected sub-section and highlight button
+      if (subStyle === 'standard') {
+        document.getElementById('standardSection').classList.remove('hidden');
+        document.getElementById('standardBtn').classList.add('theme-bg');
+        document.getElementById('standardBtn').classList.remove('bg-gray-300');
+        selectVersion('chibi-typeA', currentVersion['chibi-typeA']);
+      } else if (subStyle === 'ych') {
+        document.getElementById('ychSection').classList.remove('hidden');
+        document.getElementById('ychBtn').classList.add('theme-bg');
+        document.getElementById('ychBtn').classList.remove('bg-gray-300');
+        selectVersion('chibi-ych', currentVersion['chibi-ych']);
+      } else if (subStyle === 'pngtuber') {
+        document.getElementById('pngtuberSection').classList.remove('hidden');
+        document.getElementById('pngtuberBtn').classList.add('theme-bg');
+        document.getElementById('pngtuberBtn').classList.remove('bg-gray-300');
+      } else if (subStyle === 'emotes') {
+        document.getElementById('emotesSubSection').classList.remove('hidden');
+        document.getElementById('emotesSubBtn').classList.add('theme-bg');
+        document.getElementById('emotesSubBtn').classList.remove('bg-gray-300');
+      }
+    }
+
+    function selectVersion(style, version) {
+      currentVersion[style] = version;
+      
+      ['lineart', 'base', 'rendered'].forEach(v => {
+        const layer = document.getElementById(`${style}-${v}`);
+        const btn = document.getElementById(`${style}-${v}-btn`);
+        
+        if (layer && btn) {
+          if (v === version) {
+            layer.classList.add('active');
+            layer.classList.remove('dimmed');
+            layer.style.display = 'flex';
+            btn.classList.add('theme-bg');
+            btn.classList.remove('bg-gray-300');
+          } else {
+            layer.classList.remove('active');
+            layer.classList.add('dimmed');
+            layer.style.display = 'flex';
+            btn.classList.remove('theme-bg');
+            btn.classList.add('bg-gray-300');
+          }
+        }
+      });
+      
+      updatePrices(style, version);
+    }
+
+    function updatePrices(style, version) {
+      if (!prices[style] || !prices[style][version]) return;
+      
+      const priceData = prices[style][version];
+      const headshot = document.getElementById(`${style}-headshot`);
+      const bust = document.getElementById(`${style}-bust`);
+      const halfbody = document.getElementById(`${style}-halfbody`);
+      const fullbody = document.getElementById(`${style}-fullbody`);
+      
+      if (headshot) headshot.textContent = `Headshot: ${priceData.headshot}`;
+      if (bust) bust.textContent = `Bust: ${priceData.bust}`;
+      if (halfbody) halfbody.textContent = `Half Body: ${priceData.halfbody}`;
+      if (fullbody && priceData.fullbody) fullbody.textContent = `Whole Body: ${priceData.fullbody}`;
+    }
+
+    function showFandomMerch(fandomKey) {
+      // Reset all fandom buttons
+      Object.keys(fandomData).forEach(key => {
+        const btn = document.getElementById(`${key}Btn`);
+        if (btn) {
+          btn.classList.remove('theme-bg', 'font-semibold');
+          btn.classList.add('bg-gray-200', 'font-medium');
+        }
+      });
+      
+      // Highlight selected button
+      const selectedBtn = document.getElementById(`${fandomKey}Btn`);
+      if (selectedBtn) {
+        selectedBtn.classList.add('theme-bg', 'font-semibold');
+        selectedBtn.classList.remove('bg-gray-200', 'font-medium');
+      }
+      
+      currentFandom = fandomKey;
+      const fandom = fandomData[fandomKey];
+      
+      // Hide the no selection message
+      document.getElementById('noFandomSelected').classList.add('hidden');
+      
+      // Show the gallery
+      document.getElementById('fandomMerchGallery').classList.remove('hidden');
+      
+      // Update title
+      document.getElementById('fandomTitle').textContent = fandom.name;
+      
+      // Generate merchandise grid
+      const grid = document.getElementById('fandomMerchGrid');
+      grid.innerHTML = '';
+      
+      // Create more items (duplicate the array to show more examples)
+      const merchItems = [...fandom.items, ...fandom.items, ...fandom.items];
+      
+      merchItems.forEach((item, index) => {
+        const merchItem = document.createElement('div');
+        merchItem.className = 'bg-white border-2 theme-border rounded-lg overflow-hidden cursor-pointer hover:shadow-xl transition-shadow duration-300';
+        merchItem.onclick = function() { openMerchLightbox(this); };
+        merchItem.innerHTML = `
+          <div class="aspect-square bg-gray-200 flex items-center justify-center">
+            <span class="text-gray-500 text-center text-xs p-1">${item}<br/><span class="text-[10px]">(Click to enlarge)</span></span>
+          </div>
+          <div class="p-2 bg-gray-50">
+            <p class="subtitle-font text-xs font-semibold text-center theme-text">${item}</p>
+          </div>
+        `;
+        grid.appendChild(merchItem);
+      });
+    }
+
+    window.onclick = function(event) {
+      const socialsModal = document.getElementById('socialsModal');
+      const shopModal = document.getElementById('shopModal');
+      const lightbox = document.getElementById('lightbox');
+      if (event.target == socialsModal) {
+        closeSocials();
+      }
+      if (event.target == shopModal) {
+        closeShop();
+      }
+      if (event.target == lightbox) {
+        closeLightbox();
+      }
+    }
+
+    function openLightbox(element) {
+      const lightbox = document.getElementById('lightbox');
+      const lightboxText = document.getElementById('lightboxText');
+      
+      // Get the text content from the clicked element
+      const textContent = element.querySelector('span').childNodes[0].textContent.trim();
+      lightboxText.textContent = textContent + ' (Enlarged View)';
+      
+      // Show the lightbox
+      lightbox.style.display = 'block';
+      
+      // Prevent body scrolling when lightbox is open
+      document.body.style.overflow = 'hidden';
+    }
+
+    function openCommissionImageLightbox(element, title) {
+      const lightbox = document.getElementById('lightbox');
+      const lightboxText = document.getElementById('lightboxText');
+      const lightboxImage = document.getElementById('lightboxImage');
+      
+      lightboxText.textContent = title + ' – Enlarged View';
+      
+      // Map titles to enlarged view images
+      const imageMap = {
+  'Anime Style - Lineart': encodeURI('../../imgs/anime style sheets/Enlarged View/LINEART ANIME Enlarged View.png'),
+  'Anime Style - Base Color': encodeURI('../../imgs/anime style sheets/Enlarged View/BASE ART ANIME Enlarged View.png'),
+  'Anime Style - Fully Rendered': encodeURI('../../imgs/anime style sheets/Enlarged View/RENDERED ANIME Enlarged View.png'),
+  'Standard Chibi - Lineart': encodeURI('../../imgs/Chibi Style Sheets/Standard Chibi/Enlarged View/CHIBI LINEART Enlarged View.png'),
+  'Standard Chibi - Base Color': encodeURI('../../imgs/Chibi Style Sheets/Standard Chibi/Enlarged View/CHIBI BASE COLOR Enlarged View.png'),
+  'Standard Chibi - Fully Rendered': encodeURI('../../imgs/Chibi Style Sheets/Standard Chibi/Enlarged View/CHIBI RENDERED Enlarged View.png')
+};
+      
+      if (imageMap[title]) {
+        lightboxImage.src = imageMap[title];
+        lightboxImage.style.display = 'block';
+        lightboxText.style.display = 'none';
+      } else {
+        lightboxImage.style.display = 'none';
+        lightboxText.style.display = 'block';
+      }
+      
+      // Show the lightbox
+      lightbox.style.display = 'block';
+      
+      // Prevent body scrolling when lightbox is open
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+      const lightbox = document.getElementById('lightbox');
+      lightbox.style.display = 'none';
+      
+      // Re-enable body scrolling
+      document.body.style.overflow = 'auto';
+    }
+
+    function openCommissionLightbox(element) {
+      const lightbox = document.getElementById('lightbox');
+      const lightboxText = document.getElementById('lightboxText');
+      
+      // Get the text content from the clicked element
+      const imageText = element.querySelector('.aspect-square span').childNodes[0].textContent.trim();
+      const clientText = element.querySelector('.p-4 p').textContent.trim();
+      lightboxText.textContent = imageText + ' - ' + clientText;
+      
+      // Show the lightbox
+      lightbox.style.display = 'block';
+      
+      // Prevent body scrolling when lightbox is open
+      document.body.style.overflow = 'hidden';
+    }
+
+    function openMerchLightbox(element) {
+      const lightbox = document.getElementById('lightbox');
+      const lightboxText = document.getElementById('lightboxText');
+      
+      // Get the text content from the clicked element
+      const merchType = element.querySelector('.p-2 p').textContent.trim();
+      const merchTitle = document.getElementById('fandomTitle').textContent;
+      lightboxText.textContent = merchTitle + ' - ' + merchType + ' (Enlarged View)';
+      
+      // Show the lightbox
+      lightbox.style.display = 'block';
+      
+      // Prevent body scrolling when lightbox is open
+      document.body.style.overflow = 'hidden';
+    }
+
+    function openYchExamplesLightbox(poseId) {
+      const modal = document.getElementById('ychExamplesModal');
+      if (!modal) {
+        // Create modal if it doesn't exist
+        const newModal = document.createElement('div');
+        newModal.id = 'ychExamplesModal';
+        newModal.style.cssText = 'display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); overflow-y: auto;';
+        newModal.innerHTML = `
+          <div style="position: relative; margin: 5% auto; padding: 2rem; max-width: 900px; display: flex; flex-direction: column; gap: 1.5rem;">
+            <span onclick="closeYchExamplesModal()" style="position: absolute; top: 1rem; right: 2rem; color: #fff; font-size: 40px; font-weight: bold; cursor: pointer; background: rgba(0,0,0,0.5); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease;" onmouseover="this.style.color='#f9c501'" onmouseout="this.style.color='#fff'">&times;</span>
+            <p style="color: white; text-align: center; font-size: 18px; margin-bottom: 1rem;" id="ychModalTitle">YCH Chibi Examples</p>
+            <div id="ychExamplesContainer" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;"></div>
+          </div>
+        `;
+        document.body.appendChild(newModal);
+      }
+      
+      const examplesContainer = document.getElementById('ychExamplesContainer');
+      examplesContainer.innerHTML = '';
+      
+      // Extract type and pose from poseId (e.g., "headshot-pose1" -> "headshot", "pose1")
+      const parts = poseId.split('-');
+      const type = parts[0];
+      const pose = parts[1] || '';
+      
+      const examples = {
+        'headshot-pose1': [
+          'Headshot Pose 1 - Artist 1',
+          'Headshot Pose 1 - Artist 2',
+          'Headshot Pose 1 - Artist 3',
+          'Headshot Pose 1 - Artist 4'
+        ],
+        'headshot-pose2': [
+          'Headshot Pose 2 - Artist 1',
+          'Headshot Pose 2 - Artist 2',
+          'Headshot Pose 2 - Artist 3',
+          'Headshot Pose 2 - Artist 4'
+        ],
+        'headshot-pose3': [
+          'Headshot Pose 3 - Artist 1',
+          'Headshot Pose 3 - Artist 2',
+          'Headshot Pose 3 - Artist 3',
+          'Headshot Pose 3 - Artist 4'
+        ],
+        'headshot-pose4': [
+          'Headshot Pose 4 - Artist 1',
+          'Headshot Pose 4 - Artist 2',
+          'Headshot Pose 4 - Artist 3',
+          'Headshot Pose 4 - Artist 4'
+        ],
+        'bust-pose1': [
+          'Bust Pose 1 - Artist 1',
+          'Bust Pose 1 - Artist 2',
+          'Bust Pose 1 - Artist 3',
+          'Bust Pose 1 - Artist 4'
+        ],
+        'bust-pose2': [
+          'Bust Pose 2 - Artist 1',
+          'Bust Pose 2 - Artist 2',
+          'Bust Pose 2 - Artist 3',
+          'Bust Pose 2 - Artist 4'
+        ],
+        'bust-pose3': [
+          'Bust Pose 3 - Artist 1',
+          'Bust Pose 3 - Artist 2',
+          'Bust Pose 3 - Artist 3',
+          'Bust Pose 3 - Artist 4'
+        ],
+        'bust-pose4': [
+          'Bust Pose 4 - Artist 1',
+          'Bust Pose 4 - Artist 2',
+          'Bust Pose 4 - Artist 3',
+          'Bust Pose 4 - Artist 4'
+        ],
+        'halfbody-pose1': [
+          'Half Body Pose 1 - Artist 1',
+          'Half Body Pose 1 - Artist 2',
+          'Half Body Pose 1 - Artist 3',
+          'Half Body Pose 1 - Artist 4'
+        ],
+        'halfbody-pose2': [
+          'Half Body Pose 2 - Artist 1',
+          'Half Body Pose 2 - Artist 2',
+          'Half Body Pose 2 - Artist 3',
+          'Half Body Pose 2 - Artist 4'
+        ],
+        'halfbody-pose3': [
+          'Half Body Pose 3 - Artist 1',
+          'Half Body Pose 3 - Artist 2',
+          'Half Body Pose 3 - Artist 3',
+          'Half Body Pose 3 - Artist 4'
+        ],
+        'halfbody-pose4': [
+          'Half Body Pose 4 - Artist 1',
+          'Half Body Pose 4 - Artist 2',
+          'Half Body Pose 4 - Artist 3',
+          'Half Body Pose 4 - Artist 4'
+        ],
+        'fullbody-pose1': [
+          'Full Body Pose 1 - Artist 1',
+          'Full Body Pose 1 - Artist 2',
+          'Full Body Pose 1 - Artist 3',
+          'Full Body Pose 1 - Artist 4'
+        ],
+        'fullbody-pose2': [
+          'Full Body Pose 2 - Artist 1',
+          'Full Body Pose 2 - Artist 2',
+          'Full Body Pose 2 - Artist 3',
+          'Full Body Pose 2 - Artist 4'
+        ],
+        'fullbody-pose3': [
+          'Full Body Pose 3 - Artist 1',
+          'Full Body Pose 3 - Artist 2',
+          'Full Body Pose 3 - Artist 3',
+          'Full Body Pose 3 - Artist 4'
+        ],
+        'fullbody-pose4': [
+          'Full Body Pose 4 - Artist 1',
+          'Full Body Pose 4 - Artist 2',
+          'Full Body Pose 4 - Artist 3',
+          'Full Body Pose 4 - Artist 4'
+        ]
+      };
+      
+      // Create readable title
+      const typeName = type.charAt(0).toUpperCase() + type.slice(1);
+      const poseNum = pose.replace('pose', '');
+      document.getElementById('ychModalTitle').textContent = `YCH ${typeName} - Pose ${poseNum} Examples`;
+      
+      const examplesList = examples[poseId] || examples['headshot-pose1'];
+      
+      examplesList.forEach(example => {
+        const exampleDiv = document.createElement('div');
+        exampleDiv.style.cssText = 'background: white; border: 3px solid #f9c501; border-radius: 12px; padding: 1rem; cursor: pointer; transition: all 0.3s ease; transform: scale(0.95);';
+        exampleDiv.innerHTML = `
+          <div style="aspect-ratio: 1 / 1; background: #f5f5f5; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #666; margin-bottom: 0.5rem; transition: all 0.3s ease;">
+            <span>${example}</span>
+          </div>
+          <p style="text-align: center; font-weight: 600; color: #000; margin: 0;">${example}</p>
+        `;
+        exampleDiv.onmouseover = function() {
+          this.style.transform = 'scale(1.08)';
+          this.style.boxShadow = '0 10px 30px rgba(249, 197, 1, 0.4)';
+        };
+        exampleDiv.onmouseout = function() {
+          this.style.transform = 'scale(0.95)';
+          this.style.boxShadow = 'none';
+        };
+        examplesContainer.appendChild(exampleDiv);
+      });
+      
+      document.getElementById('ychExamplesModal').style.display = 'block';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeYchExamplesModal() {
+      const modal = document.getElementById('ychExamplesModal');
+      if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+      }
+    }
+
+    function toggleYchExamples(poseId) {
+      const examplesSection = document.getElementById(`${poseId}-examples`);
+      if (examplesSection) {
+        examplesSection.classList.toggle('visible');
+      }
+    }
+
+    function enlargeYchExample(exampleName) {
+      const modal = document.createElement('div');
+      modal.style.cssText = 'position: fixed; z-index: 3000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; overflow-y: auto;';
+      modal.innerHTML = `
+        <div style="position: relative; max-width: 85vw; max-height: 85vh; display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+          <span onclick="this.parentElement.parentElement.remove()" style="position: absolute; top: 1rem; right: 1rem; color: #fff; font-size: 40px; font-weight: bold; cursor: pointer; background: rgba(0,0,0,0.5); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; z-index: 3001;" onmouseover="this.style.color='#f9c501'" onmouseout="this.style.color='#fff'">&times;</span>
+          <div style="background: #f5f5f5; border: 3px solid #f9c501; border-radius: 12px; padding: 1rem; width: 100%; max-width: 600px; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 16px; color: #666; font-weight: 600;">
+            <span>${exampleName}</span>
+          </div>
+          <p style="color: white; text-align: center; font-size: 14px; margin: 0;">${exampleName}</p>
+        </div>
+      `;
+      document.body.appendChild(modal);
+      modal.onclick = function(event) {
+        if (event.target === modal) {
+          modal.remove();
+        }
+      };
+    }
+
+    // Close YCH examples modal on outside click
+    document.addEventListener('click', function(event) {
+      const modal = document.getElementById('ychExamplesModal');
+      if (modal && event.target === modal) {
+        closeYchExamplesModal();
+      }
+    });
+
+    // Close lightbox with Escape key
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        closeLightbox();
+      }
+    });
+
+    async function onConfigChange(config) {
+      const artistName = config.artist_name || defaultConfig.artist_name;
+      const sectionTitle = config.section_title || defaultConfig.section_title;
+      
+      const titleElements = document.querySelectorAll('.title-font');
+      if (titleElements[1]) {
+        titleElements[1].textContent = sectionTitle;
+      }
+    }
+
+    function mapToCapabilities(config) {
+      return {
+        recolorables: [],
+        borderables: [],
+        fontEditable: undefined,
+        fontSizeable: undefined
+      };
+    }
+
+    function mapToEditPanelValues(config) {
+      return new Map([
+        ["artist_name", config.artist_name || defaultConfig.artist_name],
+        ["section_title", config.section_title || defaultConfig.section_title]
+      ]);
+    }
+
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange,
+        mapToCapabilities,
+        mapToEditPanelValues
+      });
+    }
+
+    // Initialize first style (Anime - Type A)
+    showStyle('anime');
+
+    // Portfolio category switching
+    function showPortfolioCategory(category) {
+      // Hide all portfolio categories
+      document.getElementById('chibiPortfolio').classList.add('hidden');
+      document.getElementById('headshotsPortfolio').classList.add('hidden');
+      document.getElementById('bustsPortfolio').classList.add('hidden');
+      document.getElementById('halfbodyPortfolio').classList.add('hidden');
+      document.getElementById('fullbodyPortfolio').classList.add('hidden');
+      document.getElementById('merchandisePortfolio').classList.add('hidden');
+      document.getElementById('commissionsPortfolio').classList.add('hidden');
+      
+      // Reset all button styles
+      document.getElementById('chibiPortBtn').classList.remove('theme-bg');
+      document.getElementById('chibiPortBtn').classList.add('bg-gray-300');
+      document.getElementById('headshotsPortBtn').classList.remove('theme-bg');
+      document.getElementById('headshotsPortBtn').classList.add('bg-gray-300');
+      document.getElementById('bustsPortBtn').classList.remove('theme-bg');
+      document.getElementById('bustsPortBtn').classList.add('bg-gray-300');
+      document.getElementById('halfbodyPortBtn').classList.remove('theme-bg');
+      document.getElementById('halfbodyPortBtn').classList.add('bg-gray-300');
+      document.getElementById('fullbodyPortBtn').classList.remove('theme-bg');
+      document.getElementById('fullbodyPortBtn').classList.add('bg-gray-300');
+      document.getElementById('merchandisePortBtn').classList.remove('theme-bg');
+      document.getElementById('merchandisePortBtn').classList.add('bg-gray-300');
+      document.getElementById('commissionsPortBtn').classList.remove('theme-bg');
+      document.getElementById('commissionsPortBtn').classList.add('bg-gray-300');
+      
+      // Show selected category and highlight button
+      if (category === 'chibi') {
+        document.getElementById('chibiPortfolio').classList.remove('hidden');
+        document.getElementById('chibiPortBtn').classList.add('theme-bg');
+        document.getElementById('chibiPortBtn').classList.remove('bg-gray-300');
+      } else if (category === 'headshots') {
+        document.getElementById('headshotsPortfolio').classList.remove('hidden');
+        document.getElementById('headshotsPortBtn').classList.add('theme-bg');
+        document.getElementById('headshotsPortBtn').classList.remove('bg-gray-300');
+      } else if (category === 'busts') {
+        document.getElementById('bustsPortfolio').classList.remove('hidden');
+        document.getElementById('bustsPortBtn').classList.add('theme-bg');
+        document.getElementById('bustsPortBtn').classList.remove('bg-gray-300');
+      } else if (category === 'halfbody') {
+        document.getElementById('halfbodyPortfolio').classList.remove('hidden');
+        document.getElementById('halfbodyPortBtn').classList.add('theme-bg');
+        document.getElementById('halfbodyPortBtn').classList.remove('bg-gray-300');
+      } else if (category === 'fullbody') {
+        document.getElementById('fullbodyPortfolio').classList.remove('hidden');
+        document.getElementById('fullbodyPortBtn').classList.add('theme-bg');
+        document.getElementById('fullbodyPortBtn').classList.remove('bg-gray-300');
+      } else if (category === 'merchandise') {
+        document.getElementById('merchandisePortfolio').classList.remove('hidden');
+        document.getElementById('merchandisePortBtn').classList.add('theme-bg');
+        document.getElementById('merchandisePortBtn').classList.remove('bg-gray-300');
+      } else if (category === 'commissions') {
+        document.getElementById('commissionsPortfolio').classList.remove('hidden');
+        document.getElementById('commissionsPortBtn').classList.add('theme-bg');
+        document.getElementById('commissionsPortBtn').classList.remove('bg-gray-300');
+      }
+    }
+
+    // Toggle Terms & Conditions
+    function toggleTerms() {
+      const termsContent = document.getElementById('termsContent');
+      const termsArrow = document.getElementById('termsArrow');
+      
+      if (termsContent.classList.contains('hidden')) {
+        termsContent.classList.remove('hidden');
+        termsArrow.textContent = '▲';
+      } else {
+        termsContent.classList.add('hidden');
+        termsArrow.textContent = '▼';
+      }
+    }
+
+    // Toggle About Me
+    function toggleAboutMe() {
+      const aboutMeContent = document.getElementById('aboutMeContent');
+      const aboutMeArrow = document.getElementById('aboutMeArrow');
+      
+      if (aboutMeContent.classList.contains('hidden')) {
+        aboutMeContent.classList.remove('hidden');
+        aboutMeArrow.textContent = '▲';
+      } else {
+        aboutMeContent.classList.add('hidden');
+        aboutMeArrow.textContent = '▼';
+      }
+    }
+
+    // Toggle Usage & Licensing
+    function toggleUsage() {
+      const usageContent = document.getElementById('usageContent');
+      const usageArrow = document.getElementById('usageArrow');
+      
+      if (usageContent.classList.contains('hidden')) {
+        usageContent.classList.remove('hidden');
+        usageArrow.textContent = '▲';
+      } else {
+        usageContent.classList.add('hidden');
+        usageArrow.textContent = '▼';
+      }
+    }
+
+    // Toggle Price Guide
+    function togglePriceGuide(section) {
+      const priceGuideContent = document.getElementById(`priceGuideContent-${section}`);
+      const priceGuideArrow = document.getElementById(`priceGuideArrow-${section}`);
+      
+      if (priceGuideContent.classList.contains('hidden')) {
+        priceGuideContent.classList.remove('hidden');
+        priceGuideArrow.textContent = '▲';
+      } else {
+        priceGuideContent.classList.add('hidden');
+        priceGuideArrow.textContent = '▼';
+      }
+    }
+  </script>
+  <!-- Watermark & Footnote Section -->
+  <section class="bg-gradient-to-r from-yellow-50 to-yellow-100 border-t-4 theme-border py-4 px-6">
+   <div class="max-w-7xl mx-auto">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center text-center md:text-left">
+     <!-- Watermark Logo -->
+     <div class="flex flex-col items-center md:items-start">
+      <div class="w-20 h-20 bg-white border-2 theme-border rounded-lg flex items-center justify-center mb-2 shadow-sm">
+       <span class="text-gray-400 text-center text-xs font-semibold p-2">Watermark</span>
+      </div>
+      <p class="font-semibold theme-text text-xs">@jadentearl Official</p>
+     </div>
+     <!-- Short Description -->
+     <div class="md:col-span-1">
+      <p class="subtitle-font text-xs text-gray-700 leading-relaxed">
+       All artwork is watermarked to protect against art theft and ensure authenticity.
+      </p>
+     </div>
+     <!-- Footnote Info -->
+     <div class="md:col-span-1">
+      <p class="subtitle-font text-xs text-gray-600 space-y-1">
+       <span class="block">© 2024 Jade's Art Corner. All rights reserved.</span>
+       <span class="block">Art theft inquiries: <a href="https://www.instagram.com/jadentearl" target="_blank" rel="noopener noreferrer" class="theme-text font-semibold hover:underline">Contact via Instagram</a></span>
+      </p>
+     </div>
+    </div>
+   </div>
+  </section>
+ </body>
