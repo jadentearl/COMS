@@ -1548,6 +1548,10 @@
         <h4 class="subtitle-font font-bold text-base mb-2 text-gray-700">🎮 Games</h4>
         <div class="flex flex-wrap gap-2"><button onclick="showFandomMerch('genshin')" id="genshinBtn" class="bg-gray-200 text-black font-medium py-1.5 px-3 rounded-full text-sm hover:theme-bg hover:font-semibold transition">Genshin Impact</button> <button onclick="showFandomMerch('wuwa')" id="wuwaBtn" class="bg-gray-200 text-black font-medium py-1.5 px-3 rounded-full text-sm hover:theme-bg hover:font-semibold transition">Wuthering Waves</button> <button onclick="showFandomMerch('hsr')" id="hsrBtn" class="bg-gray-200 text-black font-medium py-1.5 px-3 rounded-full text-sm hover:theme-bg hover:font-semibold transition">Honkai Star Rail</button> <button onclick="showFandomMerch('ff7')" id="ff7Btn" class="bg-gray-200 text-black font-medium py-1.5 px-3 rounded-full text-sm hover:theme-bg hover:font-semibold transition">Final Fantasy VII</button> <button onclick="showFandomMerch('crk')" id="crkBtn" class="bg-gray-200 text-black font-medium py-1.5 px-3 rounded-full text-sm hover:theme-bg hover:font-semibold transition">Cookie Run Kingdom</button>
         </div>
+        <!-- Games Merchandise Gallery -->
+        <div id="gamesMerchGallery" class="hidden mt-4">
+         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="gamesMerchGrid"></div>
+        </div>
        </div><!-- Anime and Manga -->
        <div class="bg-white p-4 rounded-lg border-2 border-gray-300">
         <h4 class="subtitle-font font-bold text-base mb-2 text-gray-700">📺 Anime &amp; Manga</h4>
@@ -1556,21 +1560,29 @@
         <h5 class="subtitle-font font-semibold text-sm mb-2 mt-3 text-gray-600 italic">Danmei</h5>
         <div class="flex flex-wrap gap-2"><button onclick="showFandomMerch('svsss')" id="svsssBtn" class="bg-gray-200 text-black font-medium py-1.5 px-3 rounded-full text-sm hover:theme-bg hover:font-semibold transition">SVSSS</button> <button onclick="showFandomMerch('tgcf')" id="tgcfBtn" class="bg-gray-200 text-black font-medium py-1.5 px-3 rounded-full text-sm hover:theme-bg hover:font-semibold transition">TGCF</button> <button onclick="showFandomMerch('mdzs')" id="mdzsBtn" class="bg-gray-200 text-black font-medium py-1.5 px-3 rounded-full text-sm hover:theme-bg hover:font-semibold transition">MDZS</button>
         </div>
+        <!-- Anime Merchandise Gallery -->
+        <div id="animeMerchGallery" class="hidden mt-4">
+         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="animeMerchGrid"></div>
+        </div>
        </div><!-- Music and Virtual Idols -->
        <div class="bg-white p-4 rounded-lg border-2 border-gray-300">
         <h4 class="subtitle-font font-bold text-base mb-2 text-gray-700">🎵 Music &amp; Virtual Idols</h4>
         <div class="flex flex-wrap gap-2"><button onclick="showFandomMerch('vocaloid')" id="vocaloidBtn" class="bg-gray-200 text-black font-medium py-1.5 px-3 rounded-full text-sm hover:theme-bg hover:font-semibold transition">Vocaloid</button> <button onclick="showFandomMerch('alienstage')" id="alienstageBtn" class="bg-gray-200 text-black font-medium py-1.5 px-3 rounded-full text-sm hover:theme-bg hover:font-semibold transition">Alien Stage</button>
+        </div>
+        <!-- Music Merchandise Gallery -->
+        <div id="musicMerchGallery" class="hidden mt-4">
+         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="musicMerchGrid"></div>
         </div>
        </div><!-- Others -->
        <div class="bg-white p-4 rounded-lg border-2 border-gray-300">
         <h4 class="subtitle-font font-bold text-base mb-2 text-gray-700">✨ Others</h4>
         <div class="flex flex-wrap gap-2"><button onclick="showFandomMerch('original')" id="originalBtn" class="bg-gray-200 text-black font-medium py-1.5 px-3 rounded-full text-sm hover:theme-bg hover:font-semibold transition">Original <span class="text-xs">(My OCs)</span></button> <button onclick="showFandomMerch('others')" id="othersBtn" class="bg-gray-200 text-black font-medium py-1.5 px-3 rounded-full text-sm hover:theme-bg hover:font-semibold transition">Mixed Fandoms</button>
         </div>
+        <!-- Others Merchandise Gallery -->
+        <div id="othersMerchGallery" class="hidden mt-4">
+         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="othersMerchGrid"></div>
+        </div>
        </div>
-      </div><!-- Fandom Merchandise Gallery -->
-      <div id="fandomMerchGallery" class="hidden">
-       <h4 class="subtitle-font text-xl mb-4 text-center font-semibold theme-text" id="fandomTitle"></h4>
-       <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="fandomMerchGrid"></div>
       </div>
      </div><!-- Commissions Portfolio -->
      <div id="commissionsPortfolio" class="portfolio-category hidden">
@@ -2117,12 +2129,27 @@
     }
 
     function showFandomMerch(fandomKey) {
-      // Reset all fandom buttons
+      // Determine category based on fandom key
+      const categoryMap = {
+        'genshin': 'games', 'wuwa': 'games', 'hsr': 'games', 'ff7': 'games', 'crk': 'games',
+        'demonslayer': 'anime', 'apothecary': 'anime', 'haikyuu': 'anime', 'darling': 'anime', 
+        'sailormoon': 'anime', 'frieren': 'anime', 'jjk': 'anime', 'svsss': 'anime', 'tgcf': 'anime', 'mdzs': 'anime',
+        'vocaloid': 'music', 'alienstage': 'music',
+        'original': 'others', 'others': 'others'
+      };
+      
+      const category = categoryMap[fandomKey] || 'games';
+      const galleryId = `${category}MerchGallery`;
+      const gridId = `${category}MerchGrid`;
+      
+      // Reset all fandom buttons in this category
       Object.keys(fandomData).forEach(key => {
-        const btn = document.getElementById(`${key}Btn`);
-        if (btn) {
-          btn.classList.remove('theme-bg', 'font-semibold');
-          btn.classList.add('bg-gray-200', 'font-medium');
+        if (categoryMap[key] === category) {
+          const btn = document.getElementById(`${key}Btn`);
+          if (btn) {
+            btn.classList.remove('theme-bg', 'font-semibold');
+            btn.classList.add('bg-gray-200', 'font-medium');
+          }
         }
       });
       
@@ -2139,18 +2166,21 @@
       // Hide the no selection message
       document.getElementById('noFandomSelected').classList.add('hidden');
       
-      // Show the gallery
-      document.getElementById('fandomMerchGallery').classList.remove('hidden');
-      
-      // Update title
-      document.getElementById('fandomTitle').textContent = fandom.name;
+      // Show the category gallery
+      const gallery = document.getElementById(galleryId);
+      gallery.classList.remove('hidden');
       
       // Generate merchandise grid
-      const grid = document.getElementById('fandomMerchGrid');
+      const grid = document.getElementById(gridId);
       grid.innerHTML = '';
       
       // Display each item once
       const merchItems = fandom.items;
+      
+      if (merchItems.length === 0) {
+        grid.innerHTML = '<p class="col-span-full text-center text-gray-500">No merchandise available yet</p>';
+        return;
+      }
       
       merchItems.forEach((item, index) => {
         const merchItem = document.createElement('div');
