@@ -2149,8 +2149,8 @@
       const grid = document.getElementById('fandomMerchGrid');
       grid.innerHTML = '';
       
-      // Create more items (duplicate the array to show more examples)
-      const merchItems = [...fandom.items, ...fandom.items, ...fandom.items];
+      // Display each item once
+      const merchItems = fandom.items;
       
       merchItems.forEach((item, index) => {
         const merchItem = document.createElement('div');
