@@ -1938,27 +1938,46 @@
       }
     };
 
-    // Fandom merchandise data
+    // Fandom merchandise data with actual image paths
     const fandomData = {
-      genshin: { name: 'Genshin Impact', items: ['Sticker', 'Button Pin', 'Art Print', 'Keychain', 'Sticker', 'Button Pin'] },
-      wuwa: { name: 'Wuthering Waves', items: ['Sticker', 'Button Pin', 'Keychain', 'Art Print'] },
-      hsr: { name: 'Honkai Star Rail', items: ['Sticker', 'Button Pin', 'Art Print', 'Keychain', 'Sticker'] },
-      ff7: { name: 'Final Fantasy VII', items: ['Art Print', 'Keychain', 'Sticker'] },
-      crk: { name: 'Cookie Run Kingdom', items: ['Sticker', 'Button Pin', 'Keychain'] },
-      demonslayer: { name: 'Demon Slayer', items: ['Sticker', 'Button Pin', 'Art Print', 'Keychain', 'Sticker', 'Button Pin'] },
-      apothecary: { name: 'The Apothecary Diaries', items: ['Sticker', 'Art Print', 'Button Pin'] },
-      haikyuu: { name: 'Haikyuu', items: ['Sticker', 'Button Pin', 'Keychain', 'Art Print'] },
-      darling: { name: 'Darling in the Franxx', items: ['Sticker', 'Art Print', 'Keychain'] },
-      sailormoon: { name: 'Sailor Moon', items: ['Sticker', 'Button Pin', 'Art Print', 'Keychain', 'Sticker'] },
-      frieren: { name: 'Frieren', items: ['Sticker', 'Button Pin', 'Art Print'] },
-      jjk: { name: 'Jujutsu Kaisen', items: ['Sticker', 'Button Pin', 'Art Print', 'Keychain', 'Sticker', 'Button Pin'] },
-      svsss: { name: 'SVSSS', items: ['Sticker', 'Button Pin', 'Art Print', 'Keychain'] },
-      tgcf: { name: 'TGCF', items: ['Sticker', 'Button Pin', 'Art Print', 'Keychain', 'Sticker'] },
-      mdzs: { name: 'MDZS', items: ['Sticker', 'Button Pin', 'Art Print', 'Keychain'] },
-      vocaloid: { name: 'Vocaloid', items: ['Sticker', 'Button Pin', 'Art Print', 'Keychain', 'Sticker', 'Button Pin'] },
-      alienstage: { name: 'Alien Stage', items: ['Sticker', 'Button Pin', 'Art Print'] },
-      original: { name: 'Original (My OCs)', items: ['Sticker', 'Button Pin', 'Art Print', 'Keychain', 'Sticker'] },
-      others: { name: 'Mixed Fandoms', items: ['Sticker', 'Button Pin', 'Art Print', 'Keychain', 'Sticker', 'Button Pin'] }
+      hsr: { name: 'Honkai Star Rail', items: [
+        { title: 'HSR 1', src: '../../imgs/Merchandise/Keychain/Honkai Star Rail Keychain/HSR 1.png' },
+        { title: 'HSR 2', src: '../../imgs/Merchandise/Keychain/Honkai Star Rail Keychain/HSR 2.png' },
+        { title: 'HSR 3', src: '../../imgs/Merchandise/Keychain/Honkai Star Rail Keychain/HSR 3.png' },
+        { title: 'HSR 4', src: '../../imgs/Merchandise/Keychain/Honkai Star Rail Keychain/HSR 4.png' }
+      ]},
+      ff7: { name: 'Final Fantasy VII', items: [
+        { title: 'Aerith', src: '../../imgs/Merchandise/Pins/FF7 Pins/Aerith.png' },
+        { title: 'Cloud', src: '../../imgs/Merchandise/Pins/FF7 Pins/Cloud.png' },
+        { title: 'Sephiroth', src: '../../imgs/Merchandise/Pins/FF7 Pins/Sephiroth.png' },
+        { title: 'Tifa', src: '../../imgs/Merchandise/Pins/FF7 Pins/Tifa.png' }
+      ]},
+      frieren: { name: 'Frieren', items: [
+        { title: 'Fern', src: '../../imgs/Merchandise/Pins/Frieren Anime Pins/Fern.png' },
+        { title: 'Frieren', src: '../../imgs/Merchandise/Pins/Frieren Anime Pins/Frieren.png' },
+        { title: 'Himmel', src: '../../imgs/Merchandise/Pins/Frieren Anime Pins/Himmel.png' },
+        { title: 'Stark', src: '../../imgs/Merchandise/Pins/Frieren Anime Pins/Stark.png' }
+      ]},
+      haikyuu: { name: 'Haikyuu', items: [
+        { title: 'Hinata', src: '../../imgs/Merchandise/Pins/Haikyuu Anime Pins/Hinata.png' },
+        { title: 'Kageyama', src: '../../imgs/Merchandise/Pins/Haikyuu Anime Pins/Kageyama.png' },
+        { title: 'Kenma', src: '../../imgs/Merchandise/Pins/Haikyuu Anime Pins/Kenma.png' }
+      ]},
+      genshin: { name: 'Genshin Impact', items: [] },
+      wuwa: { name: 'Wuthering Waves', items: [] },
+      crk: { name: 'Cookie Run Kingdom', items: [] },
+      demonslayer: { name: 'Demon Slayer', items: [] },
+      apothecary: { name: 'The Apothecary Diaries', items: [] },
+      darling: { name: 'Darling in the Franxx', items: [] },
+      sailormoon: { name: 'Sailor Moon', items: [] },
+      jjk: { name: 'Jujutsu Kaisen', items: [] },
+      svsss: { name: 'SVSSS', items: [] },
+      tgcf: { name: 'TGCF', items: [] },
+      mdzs: { name: 'MDZS', items: [] },
+      vocaloid: { name: 'Vocaloid', items: [] },
+      alienstage: { name: 'Alien Stage', items: [] },
+      original: { name: 'Original (My OCs)', items: [] },
+      others: { name: 'Mixed Fandoms', items: [] }
     };
 
     let currentFandom = null;
@@ -2135,14 +2154,14 @@
       
       merchItems.forEach((item, index) => {
         const merchItem = document.createElement('div');
-        merchItem.className = 'bg-white border-2 theme-border rounded-lg overflow-hidden cursor-pointer hover:shadow-xl transition-shadow duration-300';
+        merchItem.className = 'bg-white rounded-lg overflow-hidden cursor-pointer hover:shadow-xl transition-shadow duration-300';
         merchItem.onclick = function() { openMerchLightbox(this); };
         merchItem.innerHTML = `
-          <div class="aspect-square bg-gray-200 flex items-center justify-center">
-            <span class="text-gray-500 text-center text-xs p-1">${item}<br/><span class="text-[10px]">(Click to enlarge)</span></span>
+          <div class="aspect-square bg-white flex items-center justify-center p-2">
+            <img src="${item.src}" alt="${item.title}" class="max-w-full max-h-full object-contain" style="image-rendering: crisp-edges;">
           </div>
           <div class="p-2 bg-gray-50">
-            <p class="subtitle-font text-xs font-semibold text-center theme-text">${item}</p>
+            <p class="subtitle-font text-xs font-semibold text-center text-gray-700">${item.title}</p>
           </div>
         `;
         grid.appendChild(merchItem);
@@ -2248,12 +2267,25 @@
 
     function openMerchLightbox(element) {
       const lightbox = document.getElementById('lightbox');
+      const lightboxContent = document.querySelector('.lightbox-content');
       const lightboxText = document.getElementById('lightboxText');
+      const lightboxImage = document.getElementById('lightboxImage');
       
-      // Get the text content from the clicked element
-      const merchType = element.querySelector('.p-2 p').textContent.trim();
+      // Get the image and title from the clicked element
+      const img = element.querySelector('img');
+      const title = element.querySelector('.p-2 p').textContent.trim();
       const merchTitle = document.getElementById('fandomTitle').textContent;
-      lightboxText.textContent = merchTitle + ' - ' + merchType + ' (Enlarged View)';
+      
+      lightboxText.textContent = merchTitle + ' - ' + title;
+      
+      // Remove chibi-enlarged class if present
+      lightboxContent.classList.remove('chibi-enlarged');
+      
+      if (img && img.src) {
+        lightboxImage.src = img.src;
+        lightboxImage.style.display = 'block';
+        lightboxText.style.display = 'none';
+      }
       
       // Show the lightbox
       lightbox.style.display = 'block';
@@ -2628,8 +2660,8 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center text-center md:text-left">
      <!-- Watermark Logo -->
      <div class="flex flex-col items-center md:items-start">
-      <div class="w-20 h-20 bg-white border-2 theme-border rounded-lg flex items-center justify-center mb-2 shadow-sm">
-       <span class="text-gray-400 text-center text-xs font-semibold p-2">Watermark</span>
+      <div class="w-20 h-20 bg-transparent flex items-center justify-center mb-2">
+       <img src="../../imgs/Jade Watermark.png" alt="Jade Watermark" class="w-full h-full object-contain">
       </div>
       <p class="font-semibold theme-text text-xs">@jadentearl Official</p>
      </div>
